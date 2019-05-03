@@ -11,18 +11,15 @@ import java.net.Socket;
 public class Server implements Runnable {
     private int port;
     private String host;
-    private ClientHandlerInterface handler;
     /**
      * 构造函数初始化连接的信息（但不监听）。
      *
      * @param port 端口
      * @param host 主机
-     * @param handler 处理客户端连接
      */
-    public Server(int port, String host, ClientHandlerInterface handler) {
+    public Server(int port, String host) {
         this.port = port;
         this.host = host;
-        this.handler = handler;
     }
     /**
      * 监听端口，对于每个连接，启动一个新的线程，调用handler
@@ -39,7 +36,8 @@ public class Server implements Runnable {
                     System.out.println("Accept client from " + clientSocket);
                 new Thread(() -> {
                     try (clientSocket) { // java 9 feature
-                        handler.handle(clientSocket);
+                        ClientHandler handler = new ClientHandler(clientSocket);
+                        handler.run();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

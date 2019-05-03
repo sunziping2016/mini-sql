@@ -1,10 +1,8 @@
 package io.szp;
 
-import io.szp.common.CmdlineParseException;
+import io.szp.exception.CmdlineParseException;
 import io.szp.server.ServerConfig;
 import io.szp.server.Server;
-
-import java.net.Socket;
 
 /**
  * 这是服务端的主类，负责解析命令行，而后启动服务。
@@ -63,7 +61,7 @@ public class ServerMain {
                 }
             }
             // 启动服务
-            Server server = new Server(port, host, (Socket s) -> {});
+            Server server = new Server(port, host);
             server.run();
         } catch (Exception e) {
             e.printStackTrace();
