@@ -9,7 +9,7 @@ import java.util.HashSet;
 public class Table {
     // 保存的数据
     private Column[] columns;
-    private ArrayList<Object[]> table;
+    private ArrayList<Object[]> data;
     // 计算而得的数据
     private HashSet<Object[]> primary_key_index;
 
@@ -17,15 +17,13 @@ public class Table {
      * 从流中读取数据。
      *
      * @param in 输入流
-     * @throws IOException            IO错误
-     * @throws ClassNotFoundException 找不到对应的类
+     * @throws TableCorruptedException 表的完整性出错
      */
     public void load(ObjectInputStream in) throws TableCorruptedException {
         try {
             columns = (Column[]) in.readObject();
             //noinspection unchecked
-            table = (ArrayList<Object[]>) in.readObject();
-
+            data = (ArrayList<Object[]>) in.readObject();
             // TODO: check integration
             buildPrimaryKeyIndex();
         } catch (IOException e) {
@@ -43,7 +41,7 @@ public class Table {
      */
     public void save(ObjectOutputStream out) throws IOException {
         out.writeObject(columns);
-        out.writeObject(table);
+        out.writeObject(data);
     }
 
     /**
@@ -55,7 +53,7 @@ public class Table {
             if (columns[i].isPrimaryKey())
                 keys.add(i);
         primary_key_index = new HashSet<>();
-        for (Object[] row: table) {
+        for (Object[] row: data) {
             Object[] item = new Object[keys.size()];
             for (int i = 0; i < keys.size(); ++i)
                 item[i] = row[keys.get(i)];

@@ -1,7 +1,6 @@
 package io.szp.schema;
 
 import java.io.Serializable;
-import java.net.ServerSocket;
 
 /**
  * 每列的元信息。

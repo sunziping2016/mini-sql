@@ -16,4 +16,8 @@ public class ServerConfig {
      * 是否打印详细信息。
      */
     public static boolean verbose = false;
+    /**
+     * 默认数据库存储的根目录。
+     */
+    public static final String DEFAULT_ROOT = ".mini-sql";
 }

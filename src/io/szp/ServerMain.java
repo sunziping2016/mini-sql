@@ -13,6 +13,7 @@ public class ServerMain {
             "Options:\n" +
             "  -p, --port=PORT           port to listen (default: " + ServerConfig.DEFAULT_PORT + ")\n" +
             "  -h, --host=HOST           host to listen (default: " + ServerConfig.DEFAULT_HOST + ")\n" +
+            "  -r, --root=ROOT           root directory for databases (default: " + ServerConfig.DEFAULT_ROOT + ")\n" +
             "  --verbose                 verbose information message\n" +
             "  --help                    print this help message\n";
     /**
@@ -22,8 +23,9 @@ public class ServerMain {
      */
     public static void main(String[] args) {
         try {
-            String host = ServerConfig.DEFAULT_HOST;
             int port = ServerConfig.DEFAULT_PORT;
+            String host = ServerConfig.DEFAULT_HOST;
+            String root = ServerConfig.DEFAULT_ROOT;
             // 解析命令行
             int positionArgumentNum = 0;
             for (int i = 0; i < args.length; ++i) {
@@ -39,6 +41,12 @@ public class ServerMain {
                     host = args[i];
                 } else if (args[i].startsWith("--host=")) {
                     host = args[i].substring(7);
+                } else if (args[i].equals("-r") || args[i].equals("--root")) {
+                    if (++i == args.length)
+                        throw new CmdlineParseException("Missing argument for root");
+                    root = args[i];
+                } else if (args[i].startsWith("--root=")) {
+                    root = args[i].substring(7);
                 } else if (args[i].equals("--verbose")) {
                     ServerConfig.verbose = true;
                 } else if (args[i].equals("--help")) {
@@ -61,7 +69,7 @@ public class ServerMain {
                 }
             }
             // 启动服务
-            Server server = new Server(port, host);
+            Server server = new Server(port, host, root);
             server.run();
         } catch (Exception e) {
             e.printStackTrace();
