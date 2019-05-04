@@ -27,45 +27,30 @@ createDatabase
     : CREATE DATABASE uid
     ;
 
-createTable
-    : CREATE TABLE uid createDefinitions
-    ;
-
 dropDatabase
     : DROP DATABASE uid
+    ;
+
+createTable
+    : CREATE TABLE uid '(' createDefinition (',' createDefinition)* ')'
     ;
 
 dropTable
     : DROP TABLE uid
     ;
 
-createDefinitions
-    : '(' createDefinition (',' createDefinition)* ')'
-    ;
-
 createDefinition
-    : uid columnDefinition
-    | tableConstraint
-    ;
-
-columnDefinition
-    : typeName=(
+    : uid typeName=(
         INT | LONG | FLOAT | DOUBLE | STRING
-      ) columnConstraint*
+      ) columnConstraint*                       # CreateDefinitionAddColumn
+    | PRIMARY KEY '(' uidList ')'               # CreateDefinitionPrimaryKeyConstraint
     ;
 
 columnConstraint
-    : NOT NULL
-    | PRIMARY KEY
+    : NOT NULL      # ColumnConstraintNotNull
+    | PRIMARY KEY   # ColumnConstraintPrimaryKey
     ;
 
-tableConstraint
-    : PRIMARY KEY indexColumnNames
-    ;
-
-indexColumnNames
-    : '(' uidList ')'
-    ;
 
 selectStatement
     : SELECT selectElements fromClause?

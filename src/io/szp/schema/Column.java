@@ -55,4 +55,8 @@ public class Column implements Serializable {
     public boolean isPrimaryKey() {
         return is_primary_key;
     }
+
+    public void setPrimaryKey(boolean is_primary_key) {
+        this.is_primary_key = is_primary_key;
+    }
 }

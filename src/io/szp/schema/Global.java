@@ -70,7 +70,7 @@ public class Global {
      */
     public synchronized void removeDatabase(String name) throws SQLException {
         if (!databases.containsKey(name))
-            throw new SQLException("Database does not exists");
+            throw new SQLException("Database does not exist");
         Database database = databases.get(name);
         if (!deleteRecursive(new File(database.getRoot())))
             throw new SQLException("Failed to delete database");
@@ -78,6 +78,19 @@ public class Global {
             if (session.getCurrentDatabase() == database)
                 session.setCurrentDatabase(null);
         databases.remove(name);
+    }
+
+    /**
+     * 获取数据库。
+     *
+     * @param name 数据库名
+     * @throws SQLException 数据库不存在
+     */
+    public Database getDatabase(String name) throws SQLException{
+        Database database = databases.get(name);
+        if (database == null)
+            throw new SQLException("Database does not exist");
+        return database;
     }
 
     private void loadDatabases() throws SQLException {
@@ -90,7 +103,7 @@ public class Global {
             throw new SQLException("List databases failed");
     }
 
-    public static boolean deleteRecursive(File path) {
+    private static boolean deleteRecursive(File path) {
         boolean ret = true;
         if (path.isDirectory()){
             File[] files = path.listFiles();
