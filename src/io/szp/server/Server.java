@@ -1,6 +1,6 @@
 package io.szp.server;
 
-import io.szp.exception.DatabaseCorruptedException;
+import io.szp.exception.SQLException;
 import io.szp.schema.Global;
 
 import java.io.IOException;
@@ -21,9 +21,9 @@ public class Server implements Runnable {
      * @param port 端口
      * @param host 主机
      * @param root 数据库的根目录
-     * @throws DatabaseCorruptedException 无法读取数据库列表
+     * @throws SQLException 无法读取数据库列表
      */
-    public Server(int port, String host, String root) throws DatabaseCorruptedException {
+    public Server(int port, String host, String root) throws SQLException {
         this.port = port;
         this.host = host;
         this.global = new Global(root);

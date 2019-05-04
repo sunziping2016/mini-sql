@@ -1,6 +1,6 @@
 package io.szp.schema;
 
-import io.szp.exception.DatabaseCorruptedException;
+import io.szp.exception.SQLException;
 import io.szp.server.ServerConfig;
 
 import java.io.File;
@@ -19,9 +19,9 @@ public class Global {
      * 从数据库根目录加载数据库列表。
      *
      * @param root 根目录
-     * @throws DatabaseCorruptedException 无法读取数据库列表
+     * @throws SQLException 无法读取数据库列表
      */
-    public Global(String root) throws DatabaseCorruptedException {
+    public Global(String root) throws SQLException {
         this.databases = new HashMap<>();
         this.root = root;
         this.sessions = new ArrayList<>();
@@ -47,16 +47,57 @@ public class Global {
         sessions.remove(session);
     }
 
-    private void loadDatabases() throws DatabaseCorruptedException {
+    /**
+     * 创建数据库，会先创建目录。
+     *
+     * @param name 数据库名字
+     * @throws SQLException 创建失败
+     */
+    public synchronized void addDatabase(String name) throws SQLException {
+        if (databases.containsKey(name))
+            throw new SQLException("Database already exists");
+        String new_root = Paths.get(root, name).toString();
+        if (!new File(new_root).mkdir())
+            throw new SQLException("Cannot create database");
+        databases.put(name, new Database(new_root));
+    }
+
+    /**
+     * 删除数据库，会删除目录，如果有Session使用该数据库，会退出。
+     *
+     * @param name 数据库名字
+     * @throws SQLException 删除失败
+     */
+    public synchronized void removeDatabase(String name) throws SQLException {
+        if (!databases.containsKey(name))
+            throw new SQLException("Database does not exists");
+        Database database = databases.get(name);
+        if (!deleteRecursive(new File(database.getRoot())))
+            throw new SQLException("Failed to delete database");
+        for (var session : sessions)
+            if (session.getCurrentDatabase() == database)
+                session.setCurrentDatabase(null);
+        databases.remove(name);
+    }
+
+    private void loadDatabases() throws SQLException {
         databases.clear();
         String[] list = new File(root).list();
         if (list != null) {
-            for (var item : list) {
+            for (var item : list)
                 databases.put(item, new Database(Paths.get(root, item).toString()));
-                if (ServerConfig.verbose)
-                    System.out.println("Loaded database \"" + item + "\"");
-            }
         } else
-            throw new DatabaseCorruptedException("List databases failed");
+            throw new SQLException("List databases failed");
+    }
+
+    public static boolean deleteRecursive(File path) {
+        boolean ret = true;
+        if (path.isDirectory()){
+            File[] files = path.listFiles();
+            if (files != null)
+                for (File f : files)
+                    ret = ret && deleteRecursive(f);
+        }
+        return ret && path.delete();
     }
 }

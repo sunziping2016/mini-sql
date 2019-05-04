@@ -11,10 +11,16 @@ statements
     ;
 
 statement
-    : createDatabase | createTable | dropDatabase
-    | dropTable | selectStatement | insertStatement
-    | updateStatement | deleteStatement | useStatement
-    | importStatement
+    : createDatabase    # CreateDatabaseStatement
+    | createTable       # CreateTableStatement
+    | dropDatabase      # DropDatabaseStatement
+    | dropTable         # DropTableStatement
+    | selectStatement   # SelectStatementStatement
+    | insertStatement   # InsertStatementStatement
+    | updateStatement   # UpdateStatementStatement
+    | deleteStatement   # DeleteStatementStatement
+    | useStatement      # UseStatementStatement
+    | importStatement   # ImportStatementStatement
     ;
 
 createDatabase
