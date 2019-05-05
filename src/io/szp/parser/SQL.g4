@@ -136,19 +136,19 @@ predicate
     ;
 
 expressionAtom
-    : constant
-    | (uid '.') ? uid
-    | unaryOperator expressionAtom
-    | '(' expression ')'
+    : constant                              # ConstantExpression
+    | (tableName=uid '.') ? columnName=uid  # VariableExpression
+    | unaryOperator expressionAtom          # UnaryExpression
+    | '(' expression ')'                    # NestedExpression
     ;
 
 constant
-    : STRING_LITERAL
-    | DECIMAL_LITERAL
-    | REAL_LITERAL
-    | TRUE
-    | FALSE
-    | NULL
+    : STRING_LITERAL    # StringConstant
+    | DECIMAL_LITERAL   # DecimalConstant
+    | REAL_LITERAL      # RealConstant
+    | TRUE              # TrueConstant
+    | FALSE             # FalseConstant
+    | NULL              # NullConstant
     ;
 
 unaryOperator
@@ -234,6 +234,6 @@ ID:                                  ID_LITERAL;
 
 fragment EXPONENT_NUM_PART:          'E' '-'? DEC_DIGIT+;
 fragment ID_LITERAL:                 [A-Z_$0-9]*?[A-Z_$]+?[A-Z_$0-9]*;
-fragment DQUOTA_STRING:              '"' ( '\\'. | '""' | ~('"'| '\\') )* '"';
-fragment SQUOTA_STRING:              '\'' ('\\'. | '\'\'' | ~('\'' | '\\'))* '\'';
+fragment DQUOTA_STRING:              '"' ( '\\'. | ~('\\') )* '"';
+fragment SQUOTA_STRING:              '\'' ( '\\'. | ~('\\') )* '\'';
 fragment DEC_DIGIT:                  [0-9];

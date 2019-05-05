@@ -1,5 +1,6 @@
 package io.szp.parser;
 
+import io.szp.expression.*;
 import io.szp.schema.Column;
 import io.szp.schema.Type;
 
@@ -123,6 +124,7 @@ public class Visitor extends SQLBaseVisitor<Object> {
 
     @Override
     public Statement visitSelectStatement(SQLParser.SelectStatementContext ctx) {
+        visit(ctx.expression());
         return new EmptyStatement();
     }
 
@@ -217,5 +219,48 @@ public class Visitor extends SQLBaseVisitor<Object> {
     @Override
     public ColumnConstraint visitColumnConstraintPrimaryKey(SQLParser.ColumnConstraintPrimaryKeyContext ctx) {
         return ColumnConstraint.PRIMARY_KEY;
+    }
+
+    @Override
+    public Object visitConstantExpression(SQLParser.ConstantExpressionContext ctx) {
+        return visit(ctx.constant());
+    }
+
+    @Override
+    public Object visitVariableExpression(SQLParser.VariableExpressionContext ctx) {
+        String table_name = null;
+        if (ctx.tableName != null)
+            table_name = (String) visit(ctx.tableName);
+        return new VariableExpression(table_name, (String) visit(ctx.columnName));
+    }
+
+    @Override
+    public Expression visitStringConstant(SQLParser.StringConstantContext ctx) {
+        return new StringConstant(ctx.getText());
+    }
+
+    @Override
+    public Expression visitDecimalConstant(SQLParser.DecimalConstantContext ctx) {
+        return new DecimalConstant(ctx.getText());
+    }
+
+    @Override
+    public Expression visitRealConstant(SQLParser.RealConstantContext ctx) {
+        return new RealConstant(ctx.getText());
+    }
+
+    @Override
+    public Expression visitTrueConstant(SQLParser.TrueConstantContext ctx) {
+        return new BooleanConstant(true);
+    }
+
+    @Override
+    public Expression visitFalseConstant(SQLParser.FalseConstantContext ctx) {
+        return new BooleanConstant(false);
+    }
+
+    @Override
+    public Expression visitNullConstant(SQLParser.NullConstantContext ctx) {
+        return new NullConstant();
     }
 }

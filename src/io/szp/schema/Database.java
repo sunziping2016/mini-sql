@@ -65,7 +65,7 @@ public class Database {
                 Table table = new Table();
                 table.setRoot(Paths.get(root, item).toString());
                 table.load();
-                tables.put(item, new Table());
+                tables.put(item, table);
             }
         } else
             throw new SQLException("List databases failed");
