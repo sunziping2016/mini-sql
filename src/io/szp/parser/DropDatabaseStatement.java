@@ -8,7 +8,7 @@ import io.szp.schema.Table;
 /**
  * 删除数据库的SQL语句
  */
-public class DropDatabaseStatement extends Statement {
+public class DropDatabaseStatement implements Statement {
     private String name;
 
     /**

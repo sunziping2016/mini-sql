@@ -49,6 +49,16 @@ public class Visitor extends SQLBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitShowDatabasesStatement(SQLParser.ShowDatabasesStatementContext ctx) {
+        return visit(ctx.showDatabases());
+    }
+
+    @Override
+    public Object visitShowTablesStatement(SQLParser.ShowTablesStatementContext ctx) {
+        return visit(ctx.showTables());
+    }
+
+    @Override
     public Object visitSelectStatementStatement(SQLParser.SelectStatementStatementContext ctx) {
         return visit(ctx.selectStatement());
     }
@@ -102,23 +112,33 @@ public class Visitor extends SQLBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitShowDatabases(SQLParser.ShowDatabasesContext ctx) {
+        return new ShowDatabasesStatement();
+    }
+
+    @Override
+    public Object visitShowTables(SQLParser.ShowTablesContext ctx) {
+        return new ShowTablesStatement();
+    }
+
+    @Override
     public Statement visitSelectStatement(SQLParser.SelectStatementContext ctx) {
-        return new Statement();
+        return new EmptyStatement();
     }
 
     @Override
     public Statement visitInsertStatement(SQLParser.InsertStatementContext ctx) {
-        return new Statement();
+        return new EmptyStatement();
     }
 
     @Override
     public Statement visitUpdateStatement(SQLParser.UpdateStatementContext ctx) {
-        return new Statement();
+        return new EmptyStatement();
     }
 
     @Override
     public Statement visitDeleteStatement(SQLParser.DeleteStatementContext ctx) {
-        return new Statement();
+        return new EmptyStatement();
     }
 
     @Override
@@ -128,7 +148,7 @@ public class Visitor extends SQLBaseVisitor<Object> {
 
     @Override
     public Statement visitImportStatement(SQLParser.ImportStatementContext ctx) {
-        return new Statement();
+        return new EmptyStatement();
     }
 
     @Override

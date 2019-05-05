@@ -9,7 +9,7 @@ import io.szp.schema.Table;
 /**
  * 删除表的SQL语句
  */
-public class DropTableStatement extends Statement {
+public class DropTableStatement implements Statement {
     private String name;
 
     /**

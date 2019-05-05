@@ -1,5 +1,7 @@
 package io.szp.server;
 
+import io.szp.exception.SQLException;
+import io.szp.exception.SyntaxException;
 import io.szp.parser.SQLLexer;
 import io.szp.parser.SQLParser;
 import io.szp.parser.Statement;
@@ -13,7 +15,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
 
 /**
@@ -68,8 +69,12 @@ public class ClientHandler implements Runnable {
                     out.flush();
                 } catch (IOException e) {
                     break;
-                } catch (Exception e) {
+                } catch (SQLException | SyntaxException e) {
                     out.writeObject(e.getMessage());
+                    out.flush();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    out.writeObject("Internal error");
                     out.flush();
                 }
             }

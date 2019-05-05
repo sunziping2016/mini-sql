@@ -20,6 +20,8 @@ statement
     | updateStatement   # UpdateStatementStatement
     | deleteStatement   # DeleteStatementStatement
     | useStatement      # UseStatementStatement
+    | showDatabases     # ShowDatabasesStatement
+    | showTables        # ShowTablesStatement
     | importStatement   # ImportStatementStatement
     ;
 
@@ -51,9 +53,16 @@ columnConstraint
     | PRIMARY KEY   # ColumnConstraintPrimaryKey
     ;
 
+showDatabases
+    : SHOW DATABASES
+    ;
+
+showTables
+    : SHOW TABLES
+    ;
 
 selectStatement
-    : SELECT selectElements fromClause?
+    : SELECT selectElements FROM tableSources (WHERE expression)?
     ;
 
 selectElements
@@ -63,10 +72,6 @@ selectElements
 
 selectElement
     : fullColumnName (AS uid)
-    ;
-
-fromClause
-    : FROM tableSources (WHERE expression)?
     ;
 
 tableSources
@@ -83,11 +88,7 @@ joinPart
     ;
 
 insertStatement
-    : INSERT INTO uid ('(' columns=uidList ')')? insertStatementValue
-    ;
-
-insertStatementValue
-    : VALUES '(' expressions')' (',' '(' expressions ')')*
+    : INSERT INTO uid ('(' columns=uidList ')')? VALUES '(' expressions')' (',' '(' expressions ')')*
     ;
 
 updateStatement
@@ -121,6 +122,7 @@ uidList
 expression
     : notOperator=(NOT | '!') expression
     | expression logicalOperator expression
+    | predicate IS NOT? testValue=(TRUE | FALSE | UNKNOWN)
     | predicate
     ;
 
@@ -136,12 +138,23 @@ predicate
 expressionAtom
     : constant
     | (uid '.') ? uid
+    | unaryOperator expressionAtom
     | '(' expression ')'
     ;
 
 constant
-    : STRING_LITERAL | '-'? DECIMAL_LITERAL | '-'? REAL_LITERAL | NULL
+    : STRING_LITERAL
+    | DECIMAL_LITERAL
+    | REAL_LITERAL
+    | TRUE
+    | FALSE
+    | NULL
     ;
+
+unaryOperator
+    : '!' | '~' | '+' | '-' | NOT
+    ;
+
 
 logicalOperator
     : AND | '&' '&' | OR | '|' '|'
@@ -180,9 +193,16 @@ INSERT:                              'INSERT';
 INTO:                                'INTO';
 VALUES:                              'VALUES';
 UPDATE:                              'UPDATE';
-SET:                                 'SET';
+SET:                                 'SEpredicate IS NOT? testValue=(TRUE | FALSE | UNKNOWN) T';
 DELETE:                              'DELETE';
 USE:                                 'USE';
+IS:                                  'IS';
+TRUE:                                'TRUE';
+FALSE:                               'FALSE';
+UNKNOWN:                             'UNKNOWN';
+SHOW:                                'SHOW';
+DATABASES:                           'DATABASES';
+TABLES:                              'TABLES';
 
 INT:                                 'INT';
 LONG:                                'LONG';

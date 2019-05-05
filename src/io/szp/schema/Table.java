@@ -4,30 +4,35 @@ import io.szp.exception.SQLException;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class Table implements Serializable {
     // 保存的数据
     private Column[] columns;
     private ArrayList<Object[]> data;
+    // 不保存但不是计算而得的数据
     private String root;
     // 计算而得的数据
     private HashSet<Object[]> primary_key_index;
+    private HashMap<String, Integer> column_index;
     /**
      * 创建空表。
      */
-    public Table() {
+    public Table() throws SQLException {
         this(new Column[0]);
     }
 
-    public Table(Column[] columns) {
+    public Table(Column[] columns) throws SQLException {
         this.columns = columns;
         data = new ArrayList<>();
         root = "";
-        primary_key_index = new HashSet<>();
+
+        buildPrimaryKeyIndex();
+        buildColumnIndex();
     }
 
-    public String getRoot() {
+    public synchronized String getRoot() {
         return root;
     }
 
@@ -47,6 +52,7 @@ public class Table implements Serializable {
             data = (ArrayList<Object[]>) in.readObject();
             // TODO: check integration
             buildPrimaryKeyIndex();
+            buildColumnIndex();
         } catch (Exception e) {
             throw new SQLException("Cannot load table");
         }
@@ -71,8 +77,29 @@ public class Table implements Serializable {
      *
      * @param out 输出
      */
-    public void print(OutputStream out) {
-        // TODO
+    public synchronized void print(PrintStream out) {
+        if (columns.length > 0)
+            out.print(columns[0].getName());
+        for (int i = 1; i < columns.length; ++i) {
+            out.print(", ");
+            out.print(columns[i].getName());
+        }
+        out.println();
+        for (var row : data) {
+            if (row.length > 0)
+                out.print(row[0]);
+            for (int i = 1; i < row.length; ++i) {
+                out.print(", ");
+                out.print(row[i]);
+            }
+            out.println();
+        }
+    }
+
+    public synchronized void addRow(Object[] row) throws SQLException {
+        if (row.length != columns.length)
+            throw new SQLException("Wrong size of row");
+        data.add(row);
     }
 
     /**
@@ -94,5 +121,11 @@ public class Table implements Serializable {
                 throw new SQLException("Duplicated primary key");
             primary_key_index.add(item);
         }
+    }
+
+    private void buildColumnIndex() {
+        column_index = new HashMap<>();
+        for (int i = 0; i < columns.length; ++i)
+            column_index.put(columns[i].getName(), i);
     }
 }

@@ -86,11 +86,15 @@ public class Global {
      * @param name 数据库名
      * @throws SQLException 数据库不存在
      */
-    public Database getDatabase(String name) throws SQLException{
+    public synchronized Database getDatabase(String name) throws SQLException{
         Database database = databases.get(name);
         if (database == null)
             throw new SQLException("Database does not exist");
         return database;
+    }
+
+    public synchronized String[] getDatabasesList() {
+        return databases.keySet().toArray(new String[0]);
     }
 
     private void loadDatabases() throws SQLException {
@@ -113,4 +117,5 @@ public class Global {
         }
         return ret && path.delete();
     }
+
 }

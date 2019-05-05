@@ -8,7 +8,7 @@ import io.szp.schema.Table;
 /**
  * 使用数据库。
  */
-public class UseStatement extends Statement {
+public class UseStatement implements Statement {
     private String name;
 
     /**

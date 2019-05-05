@@ -8,7 +8,7 @@ import io.szp.schema.Table;
 /**
  * 创建数据库的SQL语句。
  */
-public class CreateDatabaseStatement extends Statement {
+public class CreateDatabaseStatement implements Statement {
     private String name;
 
     /**

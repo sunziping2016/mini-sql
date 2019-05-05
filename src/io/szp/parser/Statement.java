@@ -8,12 +8,10 @@ import io.szp.schema.Table;
 /**
  * 这个类代表一个语句。
  */
-public class Statement {
+public interface Statement {
     /**
      * 执行并返回结果
      * @return 结果
      */
-    public Table execute(Global global, Session session) throws SQLException {
-        return null;
-    }
+    public Table execute(Global global, Session session) throws SQLException;
 }

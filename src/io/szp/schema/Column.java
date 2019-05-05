@@ -10,6 +10,10 @@ public class Column implements Serializable {
     private Type type;
     private boolean is_not_null;
     private boolean is_primary_key;
+
+    public Column(String name, Type type) {
+        this(name, type, false, false);
+    }
     /**
      * 构造列元数据。
      *

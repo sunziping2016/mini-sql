@@ -30,22 +30,8 @@ public class Database {
      *
      * @return 根目录
      */
-    public String getRoot() {
+    public synchronized String getRoot() {
         return root;
-    }
-
-    private void loadTables() throws SQLException {
-        tables.clear();
-        String[] list = new File(root).list();
-        if (list != null) {
-            for (var item : list) {
-                Table table = new Table();
-                table.setRoot(Paths.get(root, item).toString());
-                table.load();
-                tables.put(item, new Table());
-            }
-        } else
-            throw new SQLException("List databases failed");
     }
 
     public synchronized void addTable(String name, Column[] columns) throws SQLException {
@@ -65,5 +51,23 @@ public class Database {
         if (!new File(table.getRoot()).delete())
             throw new SQLException("Failed to delete table");
         tables.remove(name);
+    }
+
+    public synchronized String[] getTablesList() {
+        return tables.keySet().toArray(new String[0]);
+    }
+
+    private void loadTables() throws SQLException {
+        tables.clear();
+        String[] list = new File(root).list();
+        if (list != null) {
+            for (var item : list) {
+                Table table = new Table();
+                table.setRoot(Paths.get(root, item).toString());
+                table.load();
+                tables.put(item, new Table());
+            }
+        } else
+            throw new SQLException("List databases failed");
     }
 }

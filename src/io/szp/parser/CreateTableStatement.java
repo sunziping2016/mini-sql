@@ -5,7 +5,7 @@ import io.szp.schema.*;
 
 import java.util.ArrayList;
 
-public class CreateTableStatement extends Statement {
+public class CreateTableStatement implements Statement {
     private String name;
     private ArrayList<CreateTableDefinition> definitions;
 
