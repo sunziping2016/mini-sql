@@ -98,7 +98,7 @@ public class Visitor extends SQLBaseVisitor<Object> {
 
     @Override
     public Statement visitDropTable(SQLParser.DropTableContext ctx) {
-        return new Statement();
+        return new DropTableStatement((String) visit(ctx.uid()));
     }
 
     @Override

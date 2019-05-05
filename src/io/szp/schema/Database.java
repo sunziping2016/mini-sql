@@ -57,4 +57,13 @@ public class Database {
         table.save();
         tables.put(name, table);
     }
+
+    public synchronized void removeTable(String name) throws SQLException {
+        if (!tables.containsKey(name))
+            throw new SQLException("Table does not exist");
+        Table table = tables.get(name);
+        if (!new File(table.getRoot()).delete())
+            throw new SQLException("Failed to delete table");
+        tables.remove(name);
+    }
 }

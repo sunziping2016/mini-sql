@@ -27,6 +27,10 @@ public class Table implements Serializable {
         primary_key_index = new HashSet<>();
     }
 
+    public String getRoot() {
+        return root;
+    }
+
     public synchronized void setRoot(String root) {
         this.root = root;
     }
