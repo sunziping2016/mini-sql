@@ -152,7 +152,7 @@ constant
     ;
 
 unaryOperator
-    : '!' | '~' | '+' | '-' | NOT
+    : '!' | '+' | '-' | NOT
     ;
 
 
