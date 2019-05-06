@@ -1,4 +1,4 @@
-package io.szp.parser;
+package io.szp.statements;
 
 import io.szp.exception.SQLException;
 import io.szp.schema.*;

@@ -202,7 +202,7 @@ INSERT:                              'INSERT';
 INTO:                                'INTO';
 VALUES:                              'VALUES';
 UPDATE:                              'UPDATE';
-SET:                                 'SEpredicate IS NOT? testValue=(TRUE | FALSE | UNKNOWN) T';
+SET:                                 'SET';
 DELETE:                              'DELETE';
 USE:                                 'USE';
 IS:                                  'IS';

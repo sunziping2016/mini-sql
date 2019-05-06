@@ -38,7 +38,7 @@ public class Database {
         if (tables.containsKey(name))
             throw new SQLException("Table already exists");
         String new_root = Paths.get(root, name).toString();
-        Table table = new Table(columns);
+        Table table = new Table(columns, name);
         table.setRoot(new_root);
         table.save();
         tables.put(name, table);
@@ -62,7 +62,7 @@ public class Database {
         String[] list = new File(root).list();
         if (list != null) {
             for (var item : list) {
-                Table table = new Table();
+                Table table = new Table(item);
                 table.setRoot(Paths.get(root, item).toString());
                 table.load();
                 tables.put(item, table);

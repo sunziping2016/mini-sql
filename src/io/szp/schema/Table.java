@@ -13,20 +13,22 @@ public class Table implements Serializable {
     private ArrayList<Object[]> data;
     // 不保存但不是计算而得的数据
     private String root;
+    private String name;
     // 计算而得的数据
     private HashSet<Object[]> primary_key_index;
     private HashMap<String, Integer> column_index;
     /**
      * 创建空表。
      */
-    public Table() throws SQLException {
-        this(new Column[0]);
+    public Table(String name) throws SQLException {
+        this(new Column[0], name);
     }
 
-    public Table(Column[] columns) throws SQLException {
+    public Table(Column[] columns, String name) throws SQLException {
         this.columns = columns;
         data = new ArrayList<>();
         root = "";
+        name = name;
 
         buildPrimaryKeyIndex();
         buildColumnIndex();
@@ -38,6 +40,14 @@ public class Table implements Serializable {
 
     public synchronized void setRoot(String root) {
         this.root = root;
+    }
+
+    public synchronized String getName() {
+        return name;
+    }
+
+    public synchronized void setName(String root) {
+        this.root = name;
     }
 
     /**

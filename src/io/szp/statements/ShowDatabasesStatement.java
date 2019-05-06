@@ -1,4 +1,4 @@
-package io.szp.parser;
+package io.szp.statements;
 
 import io.szp.exception.SQLException;
 import io.szp.schema.*;
@@ -8,7 +8,7 @@ public class ShowDatabasesStatement implements Statement {
     public Table execute(Global global, Session session) throws SQLException {
         Table result = new Table(new Column[] {
                 new Column("databases", Type.STRING)
-        });
+        }, "result");
         for (var name : global.getDatabasesList())
             result.addRow(new Object[] { name });
         return result;
