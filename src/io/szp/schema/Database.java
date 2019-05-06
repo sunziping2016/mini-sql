@@ -44,6 +44,12 @@ public class Database {
         tables.put(name, table);
     }
 
+    public synchronized Table getTable(String name) throws SQLException {
+        if (!tables.containsKey(name))
+            throw new SQLException("Table does not exist");
+        return tables.get(name);
+    }
+
     public synchronized void removeTable(String name) throws SQLException {
         if (!tables.containsKey(name))
             throw new SQLException("Table does not exist");

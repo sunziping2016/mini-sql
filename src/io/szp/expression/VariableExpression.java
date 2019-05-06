@@ -6,8 +6,8 @@ public class VariableExpression implements Expression {
     private String table_name, column_name;
 
     public VariableExpression(String table_name, String column_name) {
-        table_name = table_name;
-        column_name = column_name;
+        this.table_name = table_name;
+        this.column_name = column_name;
     }
 
     @Override

@@ -15,7 +15,8 @@ public class Table implements Serializable {
     private String root;
     private String name;
     // 计算而得的数据
-    private HashSet<Object[]> primary_key_index;
+    ArrayList<Integer> primary_keys;
+    private HashSet<ArrayList<Object>> primary_key_index;
     private HashMap<String, Integer> column_index;
     /**
      * 创建空表。
@@ -109,33 +110,56 @@ public class Table implements Serializable {
     public synchronized void addRow(Object[] row) throws SQLException {
         if (row.length != columns.length)
             throw new SQLException("Wrong size of row");
+        for (int i = 0; i < columns.length; ++i)
+            if (columns[i].isNotNull() && row[i] == null)
+                throw new SQLException("Violate not null constraint");
+            if (!primary_keys.isEmpty()) {
+                ArrayList<Object> item = new ArrayList<>();
+                for (var key : primary_keys)
+                    item.add(row[key]);
+                if (primary_key_index.contains(item))
+                    throw new SQLException("Violate primary key constraint");
+                primary_key_index.add(item);
+            }
         data.add(row);
+    }
+
+    public synchronized Column[] getColumns() {
+        return columns;
+    }
+
+    public synchronized HashMap<String, Integer> getColumnIndex() {
+        return column_index;
     }
 
     /**
      * 建立主键约束的哈希表，用以检查是否冲突。
      */
     private void buildPrimaryKeyIndex() throws SQLException {
-        ArrayList<Integer> keys = new ArrayList<>();
+        primary_keys = new ArrayList<>();
         for (int i = 0; i < columns.length; ++i)
             if (columns[i].isPrimaryKey())
-                keys.add(i);
+                primary_keys.add(i);
         primary_key_index = new HashSet<>();
-        if (keys.isEmpty())
+        if (primary_keys.isEmpty())
             return;
         for (Object[] row: data) {
-            Object[] item = new Object[keys.size()];
-            for (int i = 0; i < keys.size(); ++i)
-                item[i] = row[keys.get(i)];
+            ArrayList<Object> item = new ArrayList<>();
+            for (var key : primary_keys)
+                item.add(row[key]);
             if (primary_key_index.contains(item))
                 throw new SQLException("Duplicated primary key");
             primary_key_index.add(item);
         }
     }
 
-    private void buildColumnIndex() {
+    private void buildColumnIndex() throws SQLException {
         column_index = new HashMap<>();
-        for (int i = 0; i < columns.length; ++i)
-            column_index.put(columns[i].getName(), i);
+        for (int i = 0; i < columns.length; ++i) {
+            String name = columns[i].getName();
+            if (column_index.containsKey(name))
+                throw new SQLException("Duplicated column name");
+            column_index.put(name, i);
+        }
     }
 }

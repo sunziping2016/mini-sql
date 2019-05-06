@@ -4,7 +4,7 @@ import io.szp.exception.SQLException;
 import io.szp.exception.SyntaxException;
 import io.szp.parser.SQLLexer;
 import io.szp.parser.SQLParser;
-import io.szp.statements.Statement;
+import io.szp.statement.Statement;
 import io.szp.parser.Visitor;
 import io.szp.schema.Global;
 import io.szp.schema.Session;

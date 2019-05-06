@@ -1,4 +1,4 @@
-package io.szp.statements;
+package io.szp.statement;
 
 import io.szp.exception.SQLException;
 import io.szp.schema.Global;
@@ -6,9 +6,9 @@ import io.szp.schema.Session;
 import io.szp.schema.Table;
 
 /**
- * 创建数据库的SQL语句。
+ * 删除数据库的SQL语句
  */
-public class CreateDatabaseStatement implements Statement {
+public class DropDatabaseStatement implements Statement {
     private String name;
 
     /**
@@ -16,13 +16,13 @@ public class CreateDatabaseStatement implements Statement {
      *
      * @param name 数据库名
      */
-    public CreateDatabaseStatement(String name) {
+    public DropDatabaseStatement(String name) {
         this.name = name;
     }
 
     @Override
     public Table execute(Global global, Session session) throws SQLException {
-        global.addDatabase(name);
+        global.removeDatabase(name);
         return null;
     }
 }

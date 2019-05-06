@@ -88,7 +88,7 @@ joinPart
     ;
 
 insertStatement
-    : INSERT INTO uid ('(' columns=uidList ')')? VALUES '(' expressions')' (',' '(' expressions ')')*
+    : INSERT INTO uid ('(' uidList ')')? VALUES '(' expressions')' (',' '(' expressions ')')*
     ;
 
 updateStatement

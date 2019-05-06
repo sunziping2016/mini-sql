@@ -3,7 +3,7 @@ package io.szp.parser;
 import io.szp.expression.*;
 import io.szp.schema.Column;
 import io.szp.schema.Type;
-import io.szp.statements.*;
+import io.szp.statement.*;
 
 import java.util.ArrayList;
 
@@ -135,7 +135,17 @@ public class Visitor extends SQLBaseVisitor<Object> {
 
     @Override
     public Object visitInsertStatement(SQLParser.InsertStatementContext ctx) {
-        return new EmptyStatement();
+        ArrayList<String> column_list = null;
+        if (ctx.uidList() != null)
+            column_list = (ArrayList<String>) visit(ctx.uidList());
+        ArrayList<ArrayList<Expression>> data = new ArrayList<>();
+        for (var row : ctx.expressions())
+            data.add((ArrayList<Expression>) visit(row));
+        return new InsertStatement(
+                (String) visit(ctx.uid()),
+                column_list,
+                data
+        );
     }
 
     @Override
@@ -219,6 +229,14 @@ public class Visitor extends SQLBaseVisitor<Object> {
     @Override
     public ColumnConstraint visitColumnConstraintNotNull(SQLParser.ColumnConstraintNotNullContext ctx) {
         return ColumnConstraint.NOT_NULL;
+    }
+
+    @Override
+    public Object visitExpressions(SQLParser.ExpressionsContext ctx) {
+        ArrayList<Expression> expressions = new ArrayList<>();
+        for (var expression : ctx.expression())
+            expressions.add((Expression) visit(expression));
+        return expressions;
     }
 
     @Override
