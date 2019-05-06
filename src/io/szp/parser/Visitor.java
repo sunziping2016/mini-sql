@@ -14,15 +14,15 @@ public class Visitor extends SQLBaseVisitor<Object> {
     }
 
     @Override
-    public ArrayList<Statement> visitRoot(SQLParser.RootContext ctx) {
+    public Object visitRoot(SQLParser.RootContext ctx) {
         var statements = ctx.statements();
         if (statements == null)
             return new ArrayList<>();
-        return (ArrayList<Statement>) visit(statements);
+        return visit(statements);
     }
 
     @Override
-    public ArrayList<Statement> visitStatements(SQLParser.StatementsContext ctx) {
+    public Object visitStatements(SQLParser.StatementsContext ctx) {
         ArrayList<Statement> statements = new ArrayList<>();
         for (var statement : ctx.statement())
             statements.add((Statement) visit(statement));
@@ -90,12 +90,12 @@ public class Visitor extends SQLBaseVisitor<Object> {
     }
 
     @Override
-    public Statement visitCreateDatabase(SQLParser.CreateDatabaseContext ctx) {
+    public Object visitCreateDatabase(SQLParser.CreateDatabaseContext ctx) {
         return new CreateDatabaseStatement((String) visit(ctx.uid()));
     }
 
     @Override
-    public Statement visitCreateTable(SQLParser.CreateTableContext ctx) {
+    public Object visitCreateTable(SQLParser.CreateTableContext ctx) {
         ArrayList<CreateTableDefinition> definitions = new ArrayList<>();
         for (var definition : ctx.createDefinition())
             definitions.add((CreateTableDefinition) visit(definition));
@@ -103,12 +103,12 @@ public class Visitor extends SQLBaseVisitor<Object> {
     }
 
     @Override
-    public Statement visitDropDatabase(SQLParser.DropDatabaseContext ctx) {
+    public Object visitDropDatabase(SQLParser.DropDatabaseContext ctx) {
         return new DropDatabaseStatement((String) visit(ctx.uid()));
     }
 
     @Override
-    public Statement visitDropTable(SQLParser.DropTableContext ctx) {
+    public Object visitDropTable(SQLParser.DropTableContext ctx) {
         return new DropTableStatement((String) visit(ctx.uid()));
     }
 
@@ -123,33 +123,37 @@ public class Visitor extends SQLBaseVisitor<Object> {
     }
 
     @Override
-    public Statement visitSelectStatement(SQLParser.SelectStatementContext ctx) {
-        visit(ctx.expression());
+    public Object visitSelectStatement(SQLParser.SelectStatementContext ctx) {
+        Expression expression;
+        if (ctx.expression() != null)
+            expression = (Expression) visit(ctx.expression());
+        else
+            expression = new BooleanConstant(true);
+        return new SelectStatement(expression);
+    }
+
+    @Override
+    public Object visitInsertStatement(SQLParser.InsertStatementContext ctx) {
         return new EmptyStatement();
     }
 
     @Override
-    public Statement visitInsertStatement(SQLParser.InsertStatementContext ctx) {
+    public Object visitUpdateStatement(SQLParser.UpdateStatementContext ctx) {
         return new EmptyStatement();
     }
 
     @Override
-    public Statement visitUpdateStatement(SQLParser.UpdateStatementContext ctx) {
+    public Object visitDeleteStatement(SQLParser.DeleteStatementContext ctx) {
         return new EmptyStatement();
     }
 
     @Override
-    public Statement visitDeleteStatement(SQLParser.DeleteStatementContext ctx) {
-        return new EmptyStatement();
-    }
-
-    @Override
-    public Statement visitUseStatement(SQLParser.UseStatementContext ctx) {
+    public Object visitUseStatement(SQLParser.UseStatementContext ctx) {
         return new UseStatement((String) visit(ctx.uid()));
     }
 
     @Override
-    public Statement visitImportStatement(SQLParser.ImportStatementContext ctx) {
+    public Object visitImportStatement(SQLParser.ImportStatementContext ctx) {
         return new EmptyStatement();
     }
 
@@ -222,6 +226,48 @@ public class Visitor extends SQLBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitNotExpression(SQLParser.NotExpressionContext ctx) {
+        return new UnaryExpression(UnaryExpression.Operator.NOT, (Expression) visit (ctx.expression()));
+    }
+
+    @Override
+    public Object visitLogicalExpression(SQLParser.LogicalExpressionContext ctx) {
+        // TODO
+        return new BooleanConstant(true);
+    }
+
+    @Override
+    public Object visitIsBooleanExpression(SQLParser.IsBooleanExpressionContext ctx) {
+        // TODO
+        return new BooleanConstant(true);
+    }
+
+    @Override
+    public Object visitNestedPredicateExpression(SQLParser.NestedPredicateExpressionContext ctx) {
+        return visit(ctx.predicate());
+    }
+
+    @Override
+    public Object visitCompareExpression(SQLParser.CompareExpressionContext ctx) {
+        return new CompareExpression(
+                (Expression) visit(ctx.left),
+                (CompareExpression.Operator) visit(ctx.comparisonOperator()),
+                (Expression) visit(ctx.right)
+        );
+    }
+
+    @Override
+    public Object visitIsNullExpression(SQLParser.IsNullExpressionContext ctx) {
+        // TODO
+        return new BooleanConstant(true);
+    }
+
+    @Override
+    public Object visitNestedAtomExpression(SQLParser.NestedAtomExpressionContext ctx) {
+        return visit(ctx.expressionAtom());
+    }
+
+    @Override
     public Object visitConstantExpression(SQLParser.ConstantExpressionContext ctx) {
         return visit(ctx.constant());
     }
@@ -235,32 +281,84 @@ public class Visitor extends SQLBaseVisitor<Object> {
     }
 
     @Override
-    public Expression visitStringConstant(SQLParser.StringConstantContext ctx) {
+    public Object visitUnaryExpression(SQLParser.UnaryExpressionContext ctx) {
+        UnaryExpression.Operator operator = UnaryExpression.Operator.POSITIVE;
+        switch (ctx.unaryOperator().getText()) {
+            case "!": case "NOT":
+                operator = UnaryExpression.Operator.NOT;
+            case "-":
+                operator = UnaryExpression.Operator.NEGATIVE;
+        }
+        return new UnaryExpression(operator, (Expression) visit(ctx.expressionAtom()));
+    }
+
+    @Override
+    public Object visitNestedExpression(SQLParser.NestedExpressionContext ctx) {
+        return visit(ctx.expression());
+    }
+
+    @Override
+    public Object visitStringConstant(SQLParser.StringConstantContext ctx) {
         return new StringConstant(ctx.getText());
     }
 
     @Override
-    public Expression visitDecimalConstant(SQLParser.DecimalConstantContext ctx) {
+    public Object visitDecimalConstant(SQLParser.DecimalConstantContext ctx) {
         return new DecimalConstant(ctx.getText());
     }
 
     @Override
-    public Expression visitRealConstant(SQLParser.RealConstantContext ctx) {
+    public Object visitRealConstant(SQLParser.RealConstantContext ctx) {
         return new RealConstant(ctx.getText());
     }
 
     @Override
-    public Expression visitTrueConstant(SQLParser.TrueConstantContext ctx) {
+    public Object visitTrueConstant(SQLParser.TrueConstantContext ctx) {
         return new BooleanConstant(true);
     }
 
     @Override
-    public Expression visitFalseConstant(SQLParser.FalseConstantContext ctx) {
+    public Object visitFalseConstant(SQLParser.FalseConstantContext ctx) {
         return new BooleanConstant(false);
     }
 
     @Override
-    public Expression visitNullConstant(SQLParser.NullConstantContext ctx) {
+    public Object visitNullConstant(SQLParser.NullConstantContext ctx) {
         return new NullConstant();
+    }
+
+    @Override
+    public Object visitEqualOperator(SQLParser.EqualOperatorContext ctx) {
+        return CompareExpression.Operator.EQUAL;
+    }
+
+    @Override
+    public Object visitGreateThanOperator(SQLParser.GreateThanOperatorContext ctx) {
+        return CompareExpression.Operator.GREAT_THAN;
+    }
+
+    @Override
+    public Object visitLessThanOperator(SQLParser.LessThanOperatorContext ctx) {
+        return CompareExpression.Operator.LESS_THAN;
+    }
+
+    @Override
+    public Object visitLessEqualOperator(SQLParser.LessEqualOperatorContext ctx) {
+        return CompareExpression.Operator.LESS_EQUAL;
+    }
+
+    @Override
+    public Object visitGreatEqualOperator(SQLParser.GreatEqualOperatorContext ctx) {
+        return CompareExpression.Operator.GREAT_EQUAL;
+    }
+
+    @Override
+    public Object visitNotEqualOperator(SQLParser.NotEqualOperatorContext ctx) {
+        return CompareExpression.Operator.NOT_EQUAL;
+    }
+
+    @Override
+    public Object visitNotEqual2Operator(SQLParser.NotEqual2OperatorContext ctx) {
+        return CompareExpression.Operator.NOT_EQUAL;
     }
 }

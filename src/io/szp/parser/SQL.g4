@@ -120,10 +120,10 @@ uidList
     ;
 
 expression
-    : notOperator=(NOT | '!') expression
-    | expression logicalOperator expression
-    | predicate IS NOT? testValue=(TRUE | FALSE | UNKNOWN)
-    | predicate
+    : notOperator=(NOT | '!') expression                    # NotExpression
+    | left=expression logicalOperator right=expression      # LogicalExpression
+    | predicate IS NOT? testValue=(TRUE | FALSE | UNKNOWN)  # IsBooleanExpression
+    | predicate                                             # NestedPredicateExpression
     ;
 
 expressions
@@ -131,8 +131,9 @@ expressions
     ;
 
 predicate
-    : left=predicate comparisonOperator right=predicate
-    | expressionAtom
+    : left=predicate comparisonOperator right=predicate # CompareExpression
+    | predicate IS NOT? NULL                            # IsNullExpression
+    | expressionAtom                                    # NestedAtomExpression
     ;
 
 expressionAtom
@@ -161,8 +162,13 @@ logicalOperator
     ;
 
 comparisonOperator
-    : '=' | '>' | '<' | '<' '=' | '>' '='
-    | '<' '>' | '!' '='
+    : '='               # EqualOperator
+    | '>'               # GreateThanOperator
+    | '<'               # LessThanOperator
+    | '<' '='           # LessEqualOperator
+    | '>' '='           # GreatEqualOperator
+    | '<' '>'           # NotEqualOperator
+    | '!' '='           # NotEqual2Operator
     ;
 
 importStatement
