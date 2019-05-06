@@ -158,7 +158,10 @@ unaryOperator
 
 
 logicalOperator
-    : AND | '&' '&' | OR | '|' '|'
+    : AND       # AndOperator
+    | '&' '&'   # And2Operator
+    | OR        # OrOperator
+    | '|' '|'   # Or2Operator
     ;
 
 comparisonOperator

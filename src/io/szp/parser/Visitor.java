@@ -232,14 +232,25 @@ public class Visitor extends SQLBaseVisitor<Object> {
 
     @Override
     public Object visitLogicalExpression(SQLParser.LogicalExpressionContext ctx) {
-        // TODO
-        return new BooleanConstant(true);
+        return new LogicalExpression(
+                (Expression) visit(ctx.left),
+                (LogicalExpression.Operator) visit(ctx.logicalOperator()),
+                (Expression) visit(ctx.right)
+        );
     }
 
     @Override
     public Object visitIsBooleanExpression(SQLParser.IsBooleanExpressionContext ctx) {
-        // TODO
-        return new BooleanConstant(true);
+        Boolean bool = null;
+        switch (ctx.testValue.getText()) {
+            case "TRUE":
+                bool = true;
+                break;
+            case "FALSE":
+                bool = false;
+                break;
+        }
+        return new IsBooleanExpression((Expression) visit(ctx.predicate()), bool,ctx.NOT() != null);
     }
 
     @Override
@@ -258,8 +269,7 @@ public class Visitor extends SQLBaseVisitor<Object> {
 
     @Override
     public Object visitIsNullExpression(SQLParser.IsNullExpressionContext ctx) {
-        // TODO
-        return new BooleanConstant(true);
+        return new IsNullExpression((Expression) visit(ctx.predicate()), ctx.NOT() != null);
     }
 
     @Override
@@ -286,8 +296,10 @@ public class Visitor extends SQLBaseVisitor<Object> {
         switch (ctx.unaryOperator().getText()) {
             case "!": case "NOT":
                 operator = UnaryExpression.Operator.NOT;
+                break;
             case "-":
                 operator = UnaryExpression.Operator.NEGATIVE;
+                break;
         }
         return new UnaryExpression(operator, (Expression) visit(ctx.expressionAtom()));
     }
@@ -325,6 +337,26 @@ public class Visitor extends SQLBaseVisitor<Object> {
     @Override
     public Object visitNullConstant(SQLParser.NullConstantContext ctx) {
         return new NullConstant();
+    }
+
+    @Override
+    public Object visitAndOperator(SQLParser.AndOperatorContext ctx) {
+        return LogicalExpression.Operator.AND;
+    }
+
+    @Override
+    public Object visitAnd2Operator(SQLParser.And2OperatorContext ctx) {
+        return LogicalExpression.Operator.AND;
+    }
+
+    @Override
+    public Object visitOrOperator(SQLParser.OrOperatorContext ctx) {
+        return LogicalExpression.Operator.OR;
+    }
+
+    @Override
+    public Object visitOr2Operator(SQLParser.Or2OperatorContext ctx) {
+        return LogicalExpression.Operator.OR;
     }
 
     @Override
