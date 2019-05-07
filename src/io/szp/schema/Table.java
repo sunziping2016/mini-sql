@@ -57,7 +57,7 @@ public class Table implements Serializable {
      * @throws SQLException 表的完整性出错
      */
     public synchronized void load() throws SQLException {
-        try (var in = new ObjectInputStream(new FileInputStream(root))) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(root))) {
             columns = (Column[]) in.readObject();
             //noinspection unchecked
             data = (ArrayList<Object[]>) in.readObject();
@@ -75,7 +75,7 @@ public class Table implements Serializable {
      * @throws SQLException IO错误
      */
     public synchronized void save() throws SQLException {
-        try (var out = new ObjectOutputStream(new FileOutputStream(root))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(root))) {
             out.writeObject(columns);
             out.writeObject(data);
         } catch (Exception e) {
@@ -96,7 +96,7 @@ public class Table implements Serializable {
             out.print(columns[i].getName());
         }
         out.println();
-        for (var row : data) {
+        for (Object[] row : data) {
             if (row.length > 0)
                 out.print(row[0]);
             for (int i = 1; i < row.length; ++i) {
@@ -115,7 +115,7 @@ public class Table implements Serializable {
                 throw new SQLException("Violate not null constraint");
             if (!primary_keys.isEmpty()) {
                 ArrayList<Object> item = new ArrayList<>();
-                for (var key : primary_keys)
+                for (Integer key : primary_keys)
                     item.add(row[key]);
                 if (primary_key_index.contains(item))
                     throw new SQLException("Violate primary key constraint");
@@ -145,7 +145,7 @@ public class Table implements Serializable {
             return;
         for (Object[] row: data) {
             ArrayList<Object> item = new ArrayList<>();
-            for (var key : primary_keys)
+            for (Integer key : primary_keys)
                 item.add(row[key]);
             if (primary_key_index.contains(item))
                 throw new SQLException("Duplicated primary key");

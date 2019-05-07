@@ -14,9 +14,9 @@ public class CreateTableDefinitionPrimaryKey implements CreateTableDefinition {
 
     @Override
     public void apply(ArrayList<Column> columns) throws SQLException {
-        for (var name : names) {
+        for (String name : names) {
             boolean found = false;
-            for (var column : columns) {
+            for (Column column : columns) {
                 if (column.getName().equals(name)) {
                     found = true;
                     column.setPrimaryKey(true);

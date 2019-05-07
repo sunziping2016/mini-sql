@@ -20,7 +20,7 @@ public class CreateTableStatement implements Statement {
         if (database == null)
             throw new SQLException("No database selected");
         ArrayList<Column> columns = new ArrayList<>();
-        for (var definition : definitions)
+        for (CreateTableDefinition definition : definitions)
             definition.apply(columns);
         database.addTable(name, columns.toArray(new Column[0]));
         return null;

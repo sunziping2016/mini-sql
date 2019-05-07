@@ -61,8 +61,8 @@ public class ClientCLIMain {
             }
 
             try (Socket socket = new Socket(InetAddress.getByName(host), port)) {
-                try (var out = new ObjectOutputStream(socket.getOutputStream());
-                     var in = new ObjectInputStream(socket.getInputStream())
+                try (ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+                     ObjectInputStream in = new ObjectInputStream(socket.getInputStream())
                 ) {
                     Scanner scanner = new Scanner(System.in);
                     //noinspection InfiniteLoopStatement

@@ -67,7 +67,7 @@ public class Database {
         tables.clear();
         String[] list = new File(root).list();
         if (list != null) {
-            for (var item : list) {
+            for (String item : list) {
                 Table table = new Table(item);
                 table.setRoot(Paths.get(root, item).toString());
                 table.load();

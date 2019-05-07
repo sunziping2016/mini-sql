@@ -31,8 +31,8 @@ public class ClientHandler implements Runnable {
     public void run() {
         Session session = new Session();
         global.addSession(session);
-        try (var out = new ObjectOutputStream(socket.getOutputStream());
-             var in = new ObjectInputStream(socket.getInputStream());
+        try (ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
         ) {
             while (true) {
                 try {

@@ -82,7 +82,7 @@ public class Global {
         Database database = databases.get(name);
         if (!deleteRecursive(new File(database.getRoot())))
             throw new SQLException("Failed to delete database");
-        for (var session : sessions)
+        for (Session session : sessions)
             if (session.getCurrentDatabase() == database)
                 session.setCurrentDatabase(null);
         databases.remove(name);
@@ -123,7 +123,7 @@ public class Global {
         ArrayList<Statement> statements = (ArrayList<Statement>) visitor.visit(tree);
         // 执行语句
         Table result = null;
-        for (var statement: statements)
+        for (Statement statement: statements)
             result = statement.execute(this, session);
         return result;
     }
@@ -132,7 +132,7 @@ public class Global {
         databases.clear();
         String[] list = new File(root).list();
         if (list != null) {
-            for (var item : list)
+            for (String item : list)
                 databases.put(item, new Database(Paths.get(root, item).toString()));
         } else
             throw new SQLException("List databases failed");

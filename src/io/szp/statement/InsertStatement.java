@@ -49,7 +49,7 @@ public class InsertStatement implements Statement {
         for (int i = 0; i < column_map.length; ++i)
             column_type_map[i] = columns[column_map[i]].getType();
         Variables variables = new EmptyVariables();
-        for (var row : data) {
+        for (ArrayList<Expression> row : data) {
             if (row.size() != column_map.length)
                 throw new SQLException("New row size mismatch");
             Object[] new_row = new Object[column_num];

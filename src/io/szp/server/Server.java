@@ -42,8 +42,8 @@ public class Server implements Runnable {
                 if (ServerConfig.verbose)
                     System.out.println("Accept client from " + clientSocket);
                 new Thread(() -> {
-                    try (clientSocket) { // java 9 feature
-                        ClientHandler handler = new ClientHandler(clientSocket, global);
+                    try (Socket copy = clientSocket) { // java 9 feature
+                        ClientHandler handler = new ClientHandler(copy, global);
                         handler.run();
                     } catch (Exception e) {
                         e.printStackTrace();

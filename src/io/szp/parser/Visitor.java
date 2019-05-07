@@ -16,7 +16,7 @@ public class Visitor extends SQLBaseVisitor<Object> {
 
     @Override
     public Object visitRoot(SQLParser.RootContext ctx) {
-        var statements = ctx.statements();
+        SQLParser.StatementsContext statements = ctx.statements();
         if (statements == null)
             return new ArrayList<>();
         return visit(statements);
@@ -25,7 +25,7 @@ public class Visitor extends SQLBaseVisitor<Object> {
     @Override
     public Object visitStatements(SQLParser.StatementsContext ctx) {
         ArrayList<Statement> statements = new ArrayList<>();
-        for (var statement : ctx.statement())
+        for (SQLParser.StatementContext statement : ctx.statement())
             statements.add((Statement) visit(statement));
         return statements;
     }
@@ -98,7 +98,7 @@ public class Visitor extends SQLBaseVisitor<Object> {
     @Override
     public Object visitCreateTable(SQLParser.CreateTableContext ctx) {
         ArrayList<CreateTableDefinition> definitions = new ArrayList<>();
-        for (var definition : ctx.createDefinition())
+        for (SQLParser.CreateDefinitionContext definition : ctx.createDefinition())
             definitions.add((CreateTableDefinition) visit(definition));
         return new CreateTableStatement((String) visit(ctx.uid()), definitions);
     }
@@ -139,7 +139,7 @@ public class Visitor extends SQLBaseVisitor<Object> {
         if (ctx.uidList() != null)
             column_list = (ArrayList<String>) visit(ctx.uidList());
         ArrayList<ArrayList<Expression>> data = new ArrayList<>();
-        for (var row : ctx.expressions())
+        for (SQLParser.ExpressionsContext row : ctx.expressions())
             data.add((ArrayList<Expression>) visit(row));
         return new InsertStatement(
                 (String) visit(ctx.uid()),
@@ -176,7 +176,7 @@ public class Visitor extends SQLBaseVisitor<Object> {
     @Override
     public ArrayList<String> visitUidList(SQLParser.UidListContext ctx) {
         ArrayList<String> uids = new ArrayList<>();
-        for (var uid : ctx.uid())
+        for (SQLParser.UidContext uid : ctx.uid())
             uids.add((String) visit(uid));
         return uids;
     }
@@ -206,7 +206,7 @@ public class Visitor extends SQLBaseVisitor<Object> {
             default:
                 throw new RuntimeException("Unknown type in table definition statement");
         }
-        for (var constraint : ctx.columnConstraint()) {
+        for (SQLParser.ColumnConstraintContext constraint : ctx.columnConstraint()) {
             switch ((ColumnConstraint) visit(constraint)) {
                 case NOT_NULL:
                     is_not_null = true;
@@ -234,7 +234,7 @@ public class Visitor extends SQLBaseVisitor<Object> {
     @Override
     public Object visitExpressions(SQLParser.ExpressionsContext ctx) {
         ArrayList<Expression> expressions = new ArrayList<>();
-        for (var expression : ctx.expression())
+        for (SQLParser.ExpressionContext expression : ctx.expression())
             expressions.add((Expression) visit(expression));
         return expressions;
     }

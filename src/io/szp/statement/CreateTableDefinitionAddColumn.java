@@ -14,7 +14,7 @@ public class CreateTableDefinitionAddColumn implements CreateTableDefinition {
 
     @Override
     public void apply(ArrayList<Column> columns) throws SQLException {
-        for (var c : columns)
+        for (Column c : columns)
             if (c.getName().equals(column.getName()))
                 throw new SQLException("Duplicated column name");
         columns.add(column);

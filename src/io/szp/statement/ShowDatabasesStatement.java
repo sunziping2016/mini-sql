@@ -9,7 +9,7 @@ public class ShowDatabasesStatement implements Statement {
         Table result = new Table(new Column[] {
                 new Column("databases", Type.STRING)
         }, "result");
-        for (var name : global.getDatabasesList())
+        for (String name : global.getDatabasesList())
             result.addRow(new Object[] { name });
         return result;
     }

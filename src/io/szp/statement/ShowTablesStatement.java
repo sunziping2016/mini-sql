@@ -13,7 +13,7 @@ public class ShowTablesStatement implements Statement {
         Table result = new Table(new Column[] {
                 new Column("tables", Type.STRING)
         },"result");
-        for (var name : database.getTablesList())
+        for (String name : database.getTablesList())
             result.addRow(new Object[] { name });
         return result;
     }
