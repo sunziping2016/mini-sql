@@ -59,6 +59,7 @@ public class InsertStatement implements Statement {
             }
             table.addRow(new_row);
         }
+        table.save();
         return null;
     }
 }

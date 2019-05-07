@@ -1,7 +1,15 @@
 package io.szp.schema;
 
 import io.szp.exception.SQLException;
-import io.szp.server.ServerConfig;
+import io.szp.exception.SyntaxException;
+import io.szp.parser.SQLLexer;
+import io.szp.parser.SQLParser;
+import io.szp.parser.Visitor;
+import io.szp.server.SQLThrowErrorListener;
+import io.szp.statement.Statement;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -95,6 +103,29 @@ public class Global {
 
     public synchronized String[] getDatabasesList() {
         return databases.keySet().toArray(new String[0]);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Table execute(String command, Session session) throws SQLException, SyntaxException {
+        command = command.toUpperCase();
+        // 解析命令
+        SQLThrowErrorListener listener = new SQLThrowErrorListener();
+        SQLLexer lexer = new SQLLexer(CharStreams.fromString(command));
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(listener);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        SQLParser parser = new SQLParser(tokens);
+        parser.removeErrorListeners();
+        parser.addErrorListener(listener);
+        ParseTree tree = parser.root();
+        // 遍历语法树
+        Visitor visitor = new Visitor();
+        ArrayList<Statement> statements = (ArrayList<Statement>) visitor.visit(tree);
+        // 执行语句
+        Table result = null;
+        for (var statement: statements)
+            result = statement.execute(this, session);
+        return result;
     }
 
     private void loadDatabases() throws SQLException {

@@ -79,12 +79,11 @@ tableSources
     ;
 
 tableSource
-    : uid joinPart*
+    : table=uid joinPart* AS alias=uid
     ;
 
 joinPart
     : INNER? JOIN uid (ON expression)?
-    | (LEFT | RIGHT) OUTER? JOIN uid (ON expression)?
     ;
 
 insertStatement
