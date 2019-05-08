@@ -182,6 +182,14 @@ public class Visitor extends SQLBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitFullColumnName(SQLParser.FullColumnNameContext ctx) {
+        String table_name = null;
+        if (ctx.tableName != null)
+            table_name = (String) visit(ctx.tableName);
+        return new FullColumnName(table_name, (String) visit(ctx.columnName));
+    }
+
+    @Override
     public CreateTableDefinitionAddColumn visitCreateDefinitionAddColumn(SQLParser.CreateDefinitionAddColumnContext ctx) {
         String name =(String) visit(ctx.uid());
         Type type;
@@ -303,10 +311,7 @@ public class Visitor extends SQLBaseVisitor<Object> {
 
     @Override
     public Object visitVariableExpression(SQLParser.VariableExpressionContext ctx) {
-        String table_name = null;
-        if (ctx.tableName != null)
-            table_name = (String) visit(ctx.tableName);
-        return new VariableExpression(table_name, (String) visit(ctx.columnName));
+        return new VariableExpression((FullColumnName) visit(ctx.fullColumnName()));
     }
 
     @Override

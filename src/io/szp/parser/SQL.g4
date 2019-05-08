@@ -62,7 +62,7 @@ showTables
     ;
 
 selectStatement
-    : SELECT selectElements FROM tableSources (WHERE expression)?
+    : SELECT selectElements FROM tableSource (',' tableSource)* (WHERE expression)?
     ;
 
 selectElements
@@ -74,12 +74,8 @@ selectElement
     : fullColumnName (AS uid)
     ;
 
-tableSources
-    : tableSource (',' tableSource)*
-    ;
-
 tableSource
-    : table=uid joinPart* AS alias=uid
+    : table=uid joinPart* (AS alias=uid)?
     ;
 
 joinPart
@@ -109,13 +105,13 @@ useStatement
 uid
     : ID
     ;
-    
-fullColumnName
-    : (uid '.')? uid
-    ;
 
 uidList
     : uid (',' uid)*
+    ;
+
+fullColumnName
+    : (tableName=uid '.') ? columnName=uid
     ;
 
 expression
@@ -136,10 +132,10 @@ predicate
     ;
 
 expressionAtom
-    : constant                              # ConstantExpression
-    | (tableName=uid '.') ? columnName=uid  # VariableExpression
-    | unaryOperator expressionAtom          # UnaryExpression
-    | '(' expression ')'                    # NestedExpression
+    : constant                      # ConstantExpression
+    | fullColumnName                # VariableExpression
+    | unaryOperator expressionAtom  # UnaryExpression
+    | '(' expression ')'            # NestedExpression
     ;
 
 constant

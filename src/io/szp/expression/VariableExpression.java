@@ -3,20 +3,19 @@ package io.szp.expression;
 import io.szp.exception.SQLException;
 
 public class VariableExpression implements Expression {
-    private String table_name, column_name;
+    private FullColumnName full_column_name;
 
-    public VariableExpression(String table_name, String column_name) {
-        this.table_name = table_name;
-        this.column_name = column_name;
+    public VariableExpression(FullColumnName full_column_name) {
+        this.full_column_name = full_column_name;
     }
 
     @Override
     public ExpressionType checkType(Variables variables) throws SQLException {
-        return variables.getType(table_name, column_name);
+        return variables.getType(full_column_name);
     }
 
     @Override
     public Object evaluate(Variables variables) throws SQLException {
-        return variables.get(table_name, column_name);
+        return variables.get(full_column_name);
     }
 }

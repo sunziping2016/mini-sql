@@ -55,7 +55,8 @@ public class InsertStatement implements Statement {
             Object[] new_row = new Object[column_num];
             for (int i = 0; i < column_map.length; ++i) {
                 ExpressionType type = row.get(i).checkType(variables);
-                new_row[column_map[i]] = Expression.convertToType(row.get(i).evaluate(variables), type, column_type_map[i]);
+                new_row[column_map[i]] = Expression.convertToType(row.get(i).evaluate(variables),
+                        type, column_type_map[i]);
             }
             table.addRow(new_row);
         }
