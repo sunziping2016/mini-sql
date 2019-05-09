@@ -124,8 +124,32 @@ public class Table implements Serializable {
         data.add(row);
     }
 
+    public synchronized int getColumnSize() {
+        return columns.length;
+    }
+
+    public synchronized int getRowSize() {
+        return data.size();
+    }
+
     public synchronized Column[] getColumns() {
         return columns;
+    }
+
+    public synchronized Column getColumn(int index) {
+        return columns[index];
+    }
+
+    public ArrayList<Object []> getData() {
+        return data;
+    }
+
+    public Object[] getData(int row) {
+        return data.get(row);
+    }
+
+    public synchronized Object getData(int row, int column) {
+        return data.get(row)[column];
     }
 
     public synchronized HashMap<String, Integer> getColumnIndex() {

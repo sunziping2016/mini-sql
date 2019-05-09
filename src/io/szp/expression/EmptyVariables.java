@@ -4,12 +4,17 @@ import io.szp.exception.SQLException;
 
 public class EmptyVariables implements Variables {
     @Override
-    public ExpressionType getType(FullColumnName full_column_name) throws SQLException {
-        throw new SQLException("Unknown identifier");
+    public Position getPosition(FullColumnName full_column_name) throws SQLException {
+        throw new SQLException("Column name should not be here");
     }
 
     @Override
-    public Object get(FullColumnName full_column_name) throws SQLException {
-        throw new SQLException("Unknown identifier");
+    public ExpressionType getType(Position position) {
+        throw new RuntimeException("Should not reach here");
+    }
+
+    @Override
+    public Object getValue(Position position) {
+        throw new RuntimeException("Should not reach here");
     }
 }

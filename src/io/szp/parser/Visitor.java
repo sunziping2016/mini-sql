@@ -2,6 +2,7 @@ package io.szp.parser;
 
 import io.szp.expression.*;
 import io.szp.schema.Column;
+import io.szp.schema.Table;
 import io.szp.schema.Type;
 import io.szp.statement.*;
 
@@ -134,6 +135,25 @@ public class Visitor extends SQLBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitTableSource(SQLParser.TableSourceContext ctx) {
+        ArrayList<TableSource.JoinPart> joins_parts = new ArrayList<>();
+        for (SQLParser.JoinPartContext join : ctx.joinPart())
+            joins_parts.add((TableSource.JoinPart) visit(join));
+        String alias = null;
+        if (ctx.alias != null)
+            alias = (String) visit(ctx.alias);
+        return new TableSource((String) visit(ctx.table), joins_parts, alias);
+    }
+
+    @Override
+    public Object visitJoinPart(SQLParser.JoinPartContext ctx) {
+        Expression expression = null;
+        if (ctx.expression() != null)
+            expression = (Expression) visit(ctx.expression());
+        return new TableSource.JoinPart((String) visit(ctx.uid()), expression);
+    }
+
+    @Override
     public Object visitInsertStatement(SQLParser.InsertStatementContext ctx) {
         ArrayList<String> column_list = null;
         if (ctx.uidList() != null)
@@ -190,7 +210,8 @@ public class Visitor extends SQLBaseVisitor<Object> {
     }
 
     @Override
-    public CreateTableDefinitionAddColumn visitCreateDefinitionAddColumn(SQLParser.CreateDefinitionAddColumnContext ctx) {
+    public CreateTableDefinitionAddColumn visitCreateDefinitionAddColumn(
+            SQLParser.CreateDefinitionAddColumnContext ctx) {
         String name =(String) visit(ctx.uid());
         Type type;
         boolean is_not_null = false, is_primary_key = false;

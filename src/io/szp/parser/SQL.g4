@@ -71,7 +71,7 @@ selectElements
     ;
 
 selectElement
-    : fullColumnName (AS uid)
+    : fullColumnName (AS uid)?
     ;
 
 tableSource

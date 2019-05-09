@@ -3,6 +3,18 @@ package io.szp.expression;
 import io.szp.exception.SQLException;
 
 public interface Variables {
-    ExpressionType getType(FullColumnName full_column_name) throws SQLException;
-    Object get(FullColumnName full_column_name) throws SQLException;
+    class Position {
+        public int table;
+        public int column;
+
+        public Position(int table, int column) {
+            this.table = table;
+            this.column = column;
+        }
+    }
+
+    Position getPosition(FullColumnName full_column_name) throws SQLException;
+
+    ExpressionType getType(Position position);
+    Object getValue(Position position);
 }

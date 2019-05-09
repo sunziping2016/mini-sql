@@ -27,8 +27,7 @@ public class InsertStatement implements Statement {
         if (database == null)
             throw new SQLException("No database selected");
         Table table = database.getTable(table_name);
-        Column[] columns = table.getColumns();
-        int column_num = columns.length;
+        int column_num = table.getColumnSize();
         int[] column_map;
         Type[] column_type_map;
         if (column_list == null) {
@@ -47,7 +46,7 @@ public class InsertStatement implements Statement {
         }
         column_type_map = new Type[column_map.length];
         for (int i = 0; i < column_map.length; ++i)
-            column_type_map[i] = columns[column_map[i]].getType();
+            column_type_map[i] = table.getColumn(column_map[i]).getType();
         Variables variables = new EmptyVariables();
         for (ArrayList<Expression> row : data) {
             if (row.size() != column_map.length)

@@ -9,6 +9,10 @@ import io.szp.schema.Session;
 import io.szp.schema.Table;
 
 public class SelectStatement implements Statement {
+    public class SelectElement {
+
+    }
+
     private Expression expression;
 
     // TODO
