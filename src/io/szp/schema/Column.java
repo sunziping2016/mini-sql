@@ -37,6 +37,10 @@ public class Column implements Serializable {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     /**
      * 获取列类型。
      *

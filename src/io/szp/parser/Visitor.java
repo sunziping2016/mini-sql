@@ -2,7 +2,6 @@ package io.szp.parser;
 
 import io.szp.expression.*;
 import io.szp.schema.Column;
-import io.szp.schema.Table;
 import io.szp.schema.Type;
 import io.szp.statement.*;
 
@@ -126,12 +125,38 @@ public class Visitor extends SQLBaseVisitor<Object> {
 
     @Override
     public Object visitSelectStatement(SQLParser.SelectStatementContext ctx) {
-        Expression expression;
+        ArrayList<TableSource> table_sources = new ArrayList<>();
+        Expression expression = null;
+        for (SQLParser.TableSourceContext table_source : ctx.tableSource())
+            table_sources.add((TableSource) visit(table_source));
         if (ctx.expression() != null)
             expression = (Expression) visit(ctx.expression());
-        else
-            expression = new BooleanConstant(true);
-        return new SelectStatement(expression);
+        return new SelectStatement(
+                (ArrayList<SelectStatement.SelectElement>) visit(ctx.selectElements()),
+                table_sources,
+                expression
+        );
+    }
+
+    @Override
+    public Object visitEmptySelectElements(SQLParser.EmptySelectElementsContext ctx) {
+        return null;
+    }
+
+    @Override
+    public Object visitNonemptySelectElements(SQLParser.NonemptySelectElementsContext ctx) {
+        ArrayList<SelectStatement.SelectElement> select_elements = new ArrayList<>();
+        for (SQLParser.SelectElementContext select_element : ctx.selectElement())
+            select_elements.add((SelectStatement.SelectElement) visit(select_element));
+        return select_elements;
+    }
+
+    @Override
+    public Object visitSelectElement(SQLParser.SelectElementContext ctx) {
+        String alias = null;
+        if (ctx.uid() != null)
+            alias = (String) visit(ctx.uid());
+        return new SelectStatement.SelectElement((FullColumnName) visit(ctx.fullColumnName()), alias);
     }
 
     @Override

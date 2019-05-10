@@ -34,7 +34,11 @@ public class MultipleTableVariables implements Variables {
         }
     }
 
-    public void addColumnNameToIndex(FullColumnName column_name, Position position) {
+    public int[] getRows() {
+        return rows;
+    }
+
+    private void addColumnNameToIndex(FullColumnName column_name, Position position) {
         if (conflicted_index.contains(column_name))
             return;
         if (index.containsKey(column_name)) {
@@ -42,10 +46,6 @@ public class MultipleTableVariables implements Variables {
             conflicted_index.add(column_name);
         } else
             index.put(column_name, position);
-    }
-
-    public int[] getRows() {
-        return rows;
     }
 
     @Override
@@ -85,5 +85,13 @@ public class MultipleTableVariables implements Variables {
                 return data;
         }
         throw new RuntimeException("Should not reach here");
+    }
+
+    public Column getColumn(Position position) {
+        return tables[position.table].getColumn(position.column);
+    }
+
+    public Object getRawValue(Position position) {
+        return tables[position.table].getData(rows[position.table], position.column);
     }
 }

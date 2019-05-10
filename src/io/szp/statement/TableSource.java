@@ -53,7 +53,9 @@ public class TableSource {
                 System.arraycopy(other.getColumns(), 0,
                         result_columns, base.getColumnSize(), other.getColumnSize());
                 Table result = new Table(result_columns, base.getName() + " join " + other.getName());
-                ExpressionType type = join.expression.checkType(variables);
+                ExpressionType type = ExpressionType.BOOL;
+                if (join.expression != null)
+                    type = join.expression.checkType(variables);
                 for (int i = 0; i < base.getRowSize(); ++i) {
                     for (int j = 0; j < other.getRowSize(); ++j) {
                         int[] variable_rows = variables.getRows();

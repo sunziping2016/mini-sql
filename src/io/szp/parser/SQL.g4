@@ -66,8 +66,8 @@ selectStatement
     ;
 
 selectElements
-    : star='*'
-    | selectElement (',' selectElement)*
+    : star='*'                              # EmptySelectElements
+    | selectElement (',' selectElement)*    # NonemptySelectElements
     ;
 
 selectElement
