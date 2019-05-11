@@ -86,11 +86,6 @@ public class Visitor extends SQLBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitImportStatementStatement(SQLParser.ImportStatementStatementContext ctx) {
-        return visit(ctx.importStatement());
-    }
-
-    @Override
     public Object visitCreateDatabase(SQLParser.CreateDatabaseContext ctx) {
         return new CreateDatabaseStatement((String) visit(ctx.uid()));
     }
@@ -195,22 +190,38 @@ public class Visitor extends SQLBaseVisitor<Object> {
 
     @Override
     public Object visitUpdateStatement(SQLParser.UpdateStatementContext ctx) {
-        return new EmptyStatement();
+        ArrayList<UpdateStatement.UpdatedElement> updated_elements = new ArrayList<>();
+        for (SQLParser.UpdatedElementContext updated_element : ctx.updatedElement())
+            updated_elements.add((UpdateStatement.UpdatedElement) visit(updated_element));
+        Expression expression = null;
+        if (ctx.expression() != null)
+            expression = (Expression) visit(ctx.expression());
+        return new UpdateStatement(
+                (String) visit(ctx.uid()),
+                updated_elements,
+                expression
+        );
+    }
+
+    @Override
+    public Object visitUpdatedElement(SQLParser.UpdatedElementContext ctx) {
+        return new UpdateStatement.UpdatedElement(
+                (String) visit(ctx.uid()),
+                (Expression) visit(ctx.expression())
+        );
     }
 
     @Override
     public Object visitDeleteStatement(SQLParser.DeleteStatementContext ctx) {
-        return new EmptyStatement();
+        Expression expression = null;
+        if (ctx.expression() != null)
+            expression = (Expression) visit(ctx.expression());
+        return new DeleteStatement((String) visit(ctx.uid()), expression);
     }
 
     @Override
     public Object visitUseStatement(SQLParser.UseStatementContext ctx) {
         return new UseStatement((String) visit(ctx.uid()));
-    }
-
-    @Override
-    public Object visitImportStatement(SQLParser.ImportStatementContext ctx) {
-        return new EmptyStatement();
     }
 
     @Override

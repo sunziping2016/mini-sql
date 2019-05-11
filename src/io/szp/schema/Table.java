@@ -29,7 +29,7 @@ public class Table implements Serializable {
         this.columns = columns;
         data = new ArrayList<>();
         root = "";
-        name = name;
+        this.name = name;
 
         buildPrimaryKeyIndex();
         buildColumnIndex();
@@ -124,6 +124,10 @@ public class Table implements Serializable {
         data.add(row);
     }
 
+    public synchronized void removeRow(int row) throws SQLException {
+        data.remove(row);
+    }
+
     public synchronized int getColumnSize() {
         return columns.length;
     }
@@ -140,11 +144,11 @@ public class Table implements Serializable {
         return columns[index];
     }
 
-    public ArrayList<Object []> getData() {
+    public synchronized ArrayList<Object []> getData() {
         return data;
     }
 
-    public Object[] getData(int row) {
+    public synchronized Object[] getData(int row) {
         return data.get(row);
     }
 
@@ -181,8 +185,6 @@ public class Table implements Serializable {
         column_index = new HashMap<>();
         for (int i = 0; i < columns.length; ++i) {
             String name = columns[i].getName();
-            if (column_index.containsKey(name))
-                throw new SQLException("Duplicated column name");
             column_index.put(name, i);
         }
     }

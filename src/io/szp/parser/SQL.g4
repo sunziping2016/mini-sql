@@ -22,7 +22,6 @@ statement
     | useStatement      # UseStatementStatement
     | showDatabases     # ShowDatabasesStatement
     | showTables        # ShowTablesStatement
-    | importStatement   # ImportStatementStatement
     ;
 
 createDatabase
@@ -139,7 +138,7 @@ expressionAtom
     ;
 
 constant
-    : STRING_LITERAL    # StringConstant
+    : stringLiteral    # StringConstant
     | DECIMAL_LITERAL   # DecimalConstant
     | REAL_LITERAL      # RealConstant
     | TRUE              # TrueConstant
@@ -169,8 +168,8 @@ comparisonOperator
     | '!' '='           # NotEqual2Operator
     ;
 
-importStatement
-    : IMPORT STRING_LITERAL
+stringLiteral
+    : STRING_LITERAL
     ;
 
 SPACE:                               [ \t\r\n]+ -> skip;
@@ -217,9 +216,6 @@ STRING:                              'STRING';
 NULL:                                'NULL';
 PRIMARY:                             'PRIMARY';
 KEY:                                 'KEY';
-
-// custom
-IMPORT:                              'IMPORT';
 
 // operators
 SEMI:                                ';';

@@ -11,8 +11,8 @@ public class ShowTablesStatement implements Statement {
         if (database == null)
             throw new SQLException("No database selected");
         Table result = new Table(new Column[] {
-                new Column("tables", Type.STRING)
-        },"result");
+                new Column("TABLES", Type.STRING)
+        },"RESULT");
         for (String name : database.getTablesList())
             result.addRow(new Object[] { name });
         return result;

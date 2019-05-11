@@ -48,6 +48,7 @@ public class InsertStatement implements Statement {
         for (int i = 0; i < column_map.length; ++i)
             column_type_map[i] = table.getColumn(column_map[i]).getType();
         Variables variables = new EmptyVariables();
+        int count = 0;
         for (ArrayList<Expression> row : data) {
             if (row.size() != column_map.length)
                 throw new SQLException("New row size mismatch");
@@ -58,8 +59,13 @@ public class InsertStatement implements Statement {
                         type, column_type_map[i]);
             }
             table.addRow(new_row);
+            ++count;
         }
         table.save();
-        return null;
+        Table result = new Table(new Column[] {
+                new Column("INSERTED", Type.STRING)
+        }, "RESULT");
+        result.addRow(new Object[] { count });
+        return result;
     }
 }

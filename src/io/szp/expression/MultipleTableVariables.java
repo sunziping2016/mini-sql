@@ -28,7 +28,8 @@ public class MultipleTableVariables implements Variables {
             for (int j = 0; j < column_size; ++j) {
                 Column column = table.getColumn(j);
                 Position position = new Position(i, j);
-                addColumnNameToIndex(new FullColumnName(table.getName(), column.getName()), position);
+                if (table.getName() != null)
+                    addColumnNameToIndex(new FullColumnName(table.getName(), column.getName()), position);
                 addColumnNameToIndex(new FullColumnName(null, column.getName()), position);
             }
         }
