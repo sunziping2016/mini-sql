@@ -4,14 +4,13 @@ import io.szp.exception.CmdlineParseException;
 import io.szp.exception.SQLException;
 import io.szp.schema.Table;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-public class ClientCLIMain {
+public class ClientMain {
     private static final int DEFAULT_PORT = 24620;
     private static final String DEFAULT_HOST = "127.0.0.1";
     private static final String helpMessage =
@@ -69,6 +68,22 @@ public class ClientCLIMain {
                     while (true) {
                         System.out.print("> ");
                         String command = scanner.nextLine();
+                        if (command.startsWith("import")) {
+                            int i = "import".length();
+                            while (Character.isWhitespace(command.charAt(i)))
+                                ++i;
+                            String path = command.substring(i);
+                            StringBuilder builder = new StringBuilder();
+                            try (BufferedReader file = new BufferedReader(
+                                    new InputStreamReader(new FileInputStream(path)))) {
+                                String line = file.readLine();
+                                while (line != null) {
+                                    builder.append(line).append('\n');
+                                    line = file.readLine();
+                                }
+                            }
+                            command = builder.toString();
+                        }
                         out.writeObject(command);
                         Object object = in.readObject();
                         if (object instanceof String)
