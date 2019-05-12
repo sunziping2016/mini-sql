@@ -51,7 +51,7 @@ public class InsertStatement implements Statement {
         int count = 0;
         for (ArrayList<Expression> row : data) {
             if (row.size() != column_map.length)
-                throw new SQLException("New row size mismatch");
+                throw new SQLException("Row size mismatch");
             Object[] new_row = new Object[column_num];
             for (int i = 0; i < column_map.length; ++i) {
                 ExpressionType type = row.get(i).checkType(variables);
@@ -62,10 +62,10 @@ public class InsertStatement implements Statement {
             ++count;
         }
         table.save();
-        Table result = new Table(new Column[] {
-                new Column("INSERTED", Type.STRING)
-        }, "RESULT");
-        result.addRow(new Object[] { count });
-        return result;
+        return new Table("RESULT",
+                new Column[] { new Column("INSERTED", Type.INT) },
+                new Object[][] {
+                        new Object[] { count }
+                });
     }
 }

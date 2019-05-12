@@ -35,10 +35,14 @@ public class Database {
     }
 
     public synchronized void addTable(String name, Column[] columns) throws SQLException {
+        addTable(name, columns, new Object[0][]);
+    }
+
+    public synchronized void addTable(String name, Column[] columns, Object[][] data) throws SQLException {
         if (tables.containsKey(name))
             throw new SQLException("Table already exists");
         String new_root = Paths.get(root, name).toString();
-        Table table = new Table(columns, name);
+        Table table = new Table(name, columns, data);
         table.setRoot(new_root);
         table.save();
         tables.put(name, table);

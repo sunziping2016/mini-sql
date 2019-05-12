@@ -35,7 +35,7 @@ public class TableSource {
         Table base = database.getTable(base_name);
         if (joins_parts.isEmpty()) {
             if (alias != null && !alias.equals(base.getName())) {
-                Table copy = new Table(base.getColumns(), alias);
+                Table copy = new Table(alias, base.getColumns());
                 for (Object[] row : base.getData())
                     copy.addRow(row);
                 base = copy;
@@ -52,7 +52,7 @@ public class TableSource {
                         result_columns, 0,  base.getColumnSize());
                 System.arraycopy(other.getColumns(), 0,
                         result_columns, base.getColumnSize(), other.getColumnSize());
-                Table result = new Table(result_columns, base.getName() + " JOIN " + other.getName());
+                Table result = new Table(base.getName() + " JOIN " + other.getName(), result_columns);
                 ExpressionType type = ExpressionType.BOOL;
                 if (join.expression != null)
                     type = join.expression.checkType(variables);

@@ -10,9 +10,8 @@ public class ShowTablesStatement implements Statement {
         Database database = session.getCurrentDatabase();
         if (database == null)
             throw new SQLException("No database selected");
-        Table result = new Table(new Column[] {
-                new Column("TABLES", Type.STRING)
-        },"RESULT");
+        Table result = new Table("RESULT",
+                new Column[] { new Column("TABLES", Type.STRING)});
         for (String name : database.getTablesList())
             result.addRow(new Object[] { name });
         return result;

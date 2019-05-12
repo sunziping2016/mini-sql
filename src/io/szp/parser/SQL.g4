@@ -234,6 +234,6 @@ ID:                                  ID_LITERAL;
 
 fragment EXPONENT_NUM_PART:          'E' '-'? DEC_DIGIT+;
 fragment ID_LITERAL:                 [A-Z_$0-9]*?[A-Z_$]+?[A-Z_$0-9]*;
-fragment DQUOTA_STRING:              '"' ( '\\'. | ~('\\') )* '"';
-fragment SQUOTA_STRING:              '\'' ( '\\'. | ~('\\') )* '\'';
+fragment DQUOTA_STRING:              '"' ( '\\'. | ~('"' | '\\') )* '"';
+fragment SQUOTA_STRING:              '\'' ( '\\'. | ~('\'' | '\\') )* '\'';
 fragment DEC_DIGIT:                  [0-9];

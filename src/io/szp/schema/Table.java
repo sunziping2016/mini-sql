@@ -3,17 +3,19 @@ package io.szp.schema;
 import io.szp.exception.SQLException;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class Table implements Serializable {
+    private String name;
     // 保存的数据
     private Column[] columns;
     private ArrayList<Object[]> data;
     // 不保存但不是计算而得的数据
     private String root;
-    private String name;
     // 计算而得的数据
     ArrayList<Integer> primary_keys;
     private HashSet<ArrayList<Object>> primary_key_index;
@@ -22,14 +24,18 @@ public class Table implements Serializable {
      * 创建空表。
      */
     public Table(String name) throws SQLException {
-        this(new Column[0], name);
+        this(name, new Column[0], new Object[0][]);
     }
 
-    public Table(Column[] columns, String name) throws SQLException {
-        this.columns = columns;
-        data = new ArrayList<>();
-        root = "";
+    public Table(String name, Column[] columns) throws SQLException {
+        this(name, columns, new Object[0][]);
+    }
+
+    public Table(String name, Column[] columns, Object[][] data) throws SQLException {
         this.name = name;
+        this.columns = columns;
+        this.data = new ArrayList<>(Arrays.asList(data));
+        root = "";
 
         buildPrimaryKeyIndex();
         buildColumnIndex();
@@ -160,6 +166,18 @@ public class Table implements Serializable {
         return column_index;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        Table other = (Table) obj;
+        return name.equals(other.name) &&
+                Arrays.equals(columns, other.columns) &&
+                Arrays.deepEquals(data.toArray(), other.data.toArray());
+    }
+
     /**
      * 建立主键约束的哈希表，用以检查是否冲突。
      */
@@ -187,5 +205,16 @@ public class Table implements Serializable {
             String name = columns[i].getName();
             column_index.put(name, i);
         }
+    }
+
+    @Override
+    public String toString() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try (PrintStream stream = new PrintStream(out, true, StandardCharsets.UTF_8.name())) {
+            print(stream);
+        } catch (UnsupportedEncodingException e) {
+            // do nothing
+        }
+        return new String(out.toByteArray(), StandardCharsets.UTF_8);
     }
 }

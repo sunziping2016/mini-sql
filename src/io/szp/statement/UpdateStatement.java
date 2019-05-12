@@ -66,10 +66,10 @@ public class UpdateStatement implements Statement {
             }
         }
         table.save();
-        Table result = new Table(new Column[] {
-                new Column("UPDATED", Type.STRING)
-        }, "RESULT");
-        result.addRow(new Object[] { count });
-        return result;
+        return new Table("RESULT",
+                new Column[] { new Column("UPDATED", Type.INT) },
+                new Object[][] {
+                        new Object[] { count }
+                });
     }
 }

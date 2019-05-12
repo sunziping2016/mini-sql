@@ -27,6 +27,8 @@ public class Column implements Serializable {
         this.type = type;
         this.is_not_null = is_not_null;
         this.is_primary_key = is_primary_key;
+        if (is_primary_key)
+            this.is_not_null = true;
     }
     /**
      * 获取列名。
@@ -66,5 +68,20 @@ public class Column implements Serializable {
 
     public void setPrimaryKey(boolean is_primary_key) {
         this.is_primary_key = is_primary_key;
+        if (is_primary_key)
+            this.is_not_null = true;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        Column other = (Column) obj;
+        return name.equals(other.name) &&
+                type == other.type &&
+                is_not_null == other.is_not_null &&
+                is_primary_key == other.is_primary_key;
     }
 }

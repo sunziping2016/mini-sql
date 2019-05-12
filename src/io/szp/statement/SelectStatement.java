@@ -55,7 +55,7 @@ public class SelectStatement implements Statement {
         ArrayList<Column> columns = new ArrayList<>();
         for (Variables.Position position : positions)
             columns.add(variables.getColumn(position)); // TODO
-        Table result = new Table(columns.toArray(new Column[0]), "result");
+        Table result = new Table("RESULT", columns.toArray(new Column[0]));
         cartesianProduct(tables, variables, expression, type, positions, result, 0);
         if (select_elements != null) {
             for (int i = 0; i < select_elements.size(); ++i) {

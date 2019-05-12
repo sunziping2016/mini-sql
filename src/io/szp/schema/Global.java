@@ -88,6 +88,11 @@ public class Global {
         databases.remove(name);
     }
 
+    public synchronized void removeAllDatabases() throws SQLException {
+        for (String name : databases.keySet())
+            removeDatabase(name);
+    }
+
     /**
      * 获取数据库。
      *
