@@ -2,21 +2,17 @@ package io.szp;
 
 import io.szp.exception.SQLException;
 import io.szp.schema.*;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class InsertStatementTest {
     private Global global;
     private Session session;
 
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
-
-    @Before
+    @BeforeEach
     public void init() throws SQLException {
         global = new Global(Config.root);
         session = new Session();
@@ -27,37 +23,37 @@ public class InsertStatementTest {
     // Database not selected
     @Test
     public void insertDatabaseNotSelected() throws SQLException {
-        exceptionRule.expect(SQLException.class);
-        exceptionRule.expectMessage("No database selected");
-        global.execute("insert into test values (null)", session);
+        Exception e = assertThrows(SQLException.class, () -> {
+            global.execute("insert into test values (null)", session);
+        });
+        assertEquals("No database selected", e.getMessage());
     }
+
 
     // Table not exist
     @Test
     public void insertTableNotExist() throws SQLException {
-        exceptionRule.expect(SQLException.class);
-        exceptionRule.expectMessage("Table does not exist");
         global.execute("create database test; use test", session);
-        global.execute("insert into test values (null)", session);
+        Exception e = assertThrows(SQLException.class, () -> {
+            global.execute("insert into test values (null)", session);
+        });
+        assertEquals("Table does not exist", e.getMessage());
     }
 
     // Violate not null
     @Test
     public void insertViolateNotNull() throws SQLException {
-        exceptionRule.expect(SQLException.class);
-        exceptionRule.expectMessage("Violate not null constraint");
         global.execute("create database test; use test", session);
         global.execute("create table test (i int not null)", session);
-        global.execute("insert into test values (null)", session);
-    }
-
-    @Test
-    public void insertImplicitlyViolateNotNull() throws SQLException {
-        exceptionRule.expect(SQLException.class);
-        exceptionRule.expectMessage("Violate not null constraint");
-        global.execute("create database test; use test", session);
-        global.execute("create table test (i int not null, l long)", session);
-        global.execute("insert into test (l) values (0)", session);
+        Exception e = assertThrows(SQLException.class, () -> {
+            global.execute("insert into test values (null)", session);
+        });
+        assertEquals("Violate not null constraint", e.getMessage());
+        global.execute("create table test2 (i int not null, l long)", session);
+        e = assertThrows(SQLException.class, () -> {
+            global.execute("insert into test2 (l) values (0)", session);
+        });
+        assertEquals("Violate not null constraint", e.getMessage());
     }
 
     // Multiple insert
@@ -95,31 +91,27 @@ public class InsertStatementTest {
     // Length mismatch
     @Test
     public void insertLengthMismatch() throws SQLException {
-        exceptionRule.expect(SQLException.class);
-        exceptionRule.expectMessage("Row size mismatch");
         global.execute("create database test; use test", session);
         global.execute("create table test (i int, j long)", session);
-        global.execute("insert into test values (1.0)", session);
+        Exception e = assertThrows(SQLException.class, () -> {
+                global.execute("insert into test values (1.0)", session);
+        });
+        assertEquals("Row size mismatch", e.getMessage());
     }
 
     // Violate primary key
     @Test
     public void insertViolatePrimaryKey() throws SQLException {
-        exceptionRule.expect(SQLException.class);
-        exceptionRule.expectMessage("Violate primary key constraint");
         global.execute("create database test; use test", session);
         global.execute("create table test (i int, j long, primary key (i, j))", session);
-        global.execute("insert into test values (1, 1), (1, 1)", session);
-    }
-
-    // Violate not null in primary key
-    @Test
-    public void insertViolateNotNullInPrimaryKey() throws SQLException {
-        exceptionRule.expect(SQLException.class);
-        exceptionRule.expectMessage("Violate not null constraint");
-        global.execute("create database test; use test", session);
-        global.execute("create table test (i int, j long, primary key (i, j))", session);
-        global.execute("insert into test values (null, 1)", session);
+        Exception e = assertThrows(SQLException.class, () -> {
+            global.execute("insert into test values (1, 1), (1, 1)", session);
+        });
+        assertEquals("Violate primary key constraint", e.getMessage());
+        e = assertThrows(SQLException.class, () -> {
+            global.execute("insert into test values (null, 1)", session);
+        });
+        assertEquals("Violate not null constraint", e.getMessage());
     }
 
     // Type conversion
@@ -146,11 +138,12 @@ public class InsertStatementTest {
     // Unknown column name
     @Test
     public void insertUnknownColumnName() throws SQLException {
-        exceptionRule.expect(SQLException.class);
-        exceptionRule.expectMessage("Unknown column name");
         global.execute("create database test; use test", session);
         global.execute("create table test (i int)", session);
-        global.execute("insert into test(n) values (1)", session);
+        Exception e = assertThrows(SQLException.class, () -> {
+            global.execute("insert into test(n) values (1)", session);
+        });
+        assertEquals("Unknown column name", e.getMessage());
     }
 
     // Length mismatch exception should be atomic. Won't fix.
