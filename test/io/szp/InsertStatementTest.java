@@ -60,9 +60,9 @@ public class InsertStatementTest {
     @Test
     public void insertMultiple() throws SQLException {
         Table result;
-        global.execute("create database test; use test", session);
-        global.execute("create table test (i int, s string)", session);
-        result = global.execute("insert into test (s, i) values (\"\", -1e3)", session);
+        global.execute("create database `test`; use `test`", session);
+        global.execute("create table `test` (i int, `s` string)", session);
+        result = global.execute("insert into `test` (s, `i`) values (\"\", -1e3)", session);
         assertEquals(new Table("RESULT",
                 new Column[] { new Column("INSERTED", Type.INT) },
                 new Object[][] {

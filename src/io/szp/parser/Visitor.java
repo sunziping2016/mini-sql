@@ -226,7 +226,10 @@ public class Visitor extends SQLBaseVisitor<Object> {
 
     @Override
     public Object visitUid(SQLParser.UidContext ctx) {
-        return ctx.ID().getSymbol().getText();
+        String id = ctx.getText();
+        if (id.startsWith("`"))
+            id = StringConstant.parseString(id);
+        return id;
     }
 
     @Override

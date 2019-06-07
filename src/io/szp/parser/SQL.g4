@@ -102,7 +102,7 @@ useStatement
     ;
 
 uid
-    : ID
+    : ID | BQUOTA_STRING
     ;
 
 uidList
@@ -222,6 +222,7 @@ SEMI:                                ';';
 
 // literals
 STRING_LITERAL:                      DQUOTA_STRING | SQUOTA_STRING;
+BQUOTA_STRING:                       '`' ( '\\'. | ~('`' | '\\') )* '`';
 DECIMAL_LITERAL:                     DEC_DIGIT+;
 
 REAL_LITERAL:                        (DEC_DIGIT+)? '.' DEC_DIGIT+

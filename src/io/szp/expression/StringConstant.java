@@ -7,6 +7,10 @@ public class StringConstant implements Expression {
     private String literal;
 
     public StringConstant(String raw) {
+        literal = parseString(raw);
+    }
+
+    public static String parseString(String raw) {
         StringBuilder parsed = new StringBuilder();
         int begin = 1, end = raw.length() - 1;
         while (begin != end) {
@@ -41,7 +45,7 @@ public class StringConstant implements Expression {
             }
             parsed.append(new_char);
         }
-        literal = parsed.toString();
+        return parsed.toString();
     }
 
     @Override

@@ -52,7 +52,7 @@ public class TableSource {
                         result_columns, 0,  base.getColumnSize());
                 System.arraycopy(other.getColumns(), 0,
                         result_columns, base.getColumnSize(), other.getColumnSize());
-                Table result = new Table(base.getName() + "JOIN" + other.getName(), result_columns);
+                Table result = new Table(base.getName() + " JOIN " + other.getName(), result_columns);
                 ExpressionType type = ExpressionType.BOOL;
                 if (join.expression != null)
                     type = join.expression.checkType(variables);
