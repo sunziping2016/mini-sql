@@ -17,7 +17,7 @@ public class Table implements Serializable {
     // 不保存但不是计算而得的数据
     private String root;
     // 计算而得的数据
-    ArrayList<Integer> primary_keys;
+    private ArrayList<Integer> primary_keys;
     private HashSet<ArrayList<Object>> primary_key_index;
     private HashMap<String, Integer> column_index;
     /**
@@ -119,19 +119,43 @@ public class Table implements Serializable {
         for (int i = 0; i < columns.length; ++i)
             if (columns[i].isNotNull() && row[i] == null)
                 throw new SQLException("Violate not null constraint");
-            if (!primary_keys.isEmpty()) {
-                ArrayList<Object> item = new ArrayList<>();
-                for (Integer key : primary_keys)
-                    item.add(row[key]);
-                if (primary_key_index.contains(item))
-                    throw new SQLException("Violate primary key constraint");
-                primary_key_index.add(item);
-            }
+        if (!primary_keys.isEmpty()) {
+            ArrayList<Object> item = new ArrayList<>();
+            for (Integer key : primary_keys)
+                item.add(row[key]);
+            if (primary_key_index.contains(item))
+                throw new SQLException("Violate primary key constraint");
+            primary_key_index.add(item);
+        }
         data.add(row);
     }
 
     public synchronized void removeRow(int row) throws SQLException {
+        if (!primary_keys.isEmpty()) {
+            Object[] row_data = data.get(row);
+            ArrayList<Object> item = new ArrayList<>();
+            for (Integer key : primary_keys)
+                item.add(row_data[key]);
+            primary_key_index.remove(item);
+        }
         data.remove(row);
+    }
+
+    public synchronized void updateRow(int row, Object[] new_row_data) throws SQLException {
+        Object[] old_row_data = data.get(row);
+        if (!primary_keys.isEmpty()) {
+            ArrayList<Object> item = new ArrayList<>();
+            for (Integer key : primary_keys)
+                item.add(old_row_data[key]);
+            primary_key_index.remove(item);
+        }
+        System.arraycopy(new_row_data, 0, old_row_data, 0, getColumnSize());
+        if (!primary_keys.isEmpty()) {
+            ArrayList<Object> item = new ArrayList<>();
+            for (Integer key : primary_keys)
+                item.add(new_row_data[key]);
+            primary_key_index.add(item);
+        }
     }
 
     public synchronized int getColumnSize() {

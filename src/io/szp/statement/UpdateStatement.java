@@ -5,6 +5,7 @@ import io.szp.expression.*;
 import io.szp.schema.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class UpdateStatement implements Statement {
     public static class UpdatedElement {
@@ -55,13 +56,14 @@ public class UpdateStatement implements Statement {
             Boolean expression_result;
             if (expression == null || ((expression_result = Expression.convertToBoolean(
                     expression.evaluate(variables), type)) != null && expression_result)) {
-                Object[] old_row = table.getData(i);
+                Object[] row = Arrays.copyOf(table.getData(i), table.getColumnSize());
                 for (int j = 0; j < updated_elements.size(); ++j) {
                     UpdatedElement updated_element = updated_elements.get(j);
-                    old_row[positions.get(j).column] = Expression.convertToType(
+                    row[positions.get(j).column] = Expression.convertToType(
                             updated_element.expression.evaluate(variables),
                             expression_types.get(j), target_types.get(j));
                 }
+                table.updateRow(i, row);
                 ++count;
             }
         }
