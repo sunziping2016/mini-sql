@@ -142,6 +142,9 @@ public class Table implements Serializable {
     }
 
     public synchronized void updateRow(int row, Object[] new_row_data) throws SQLException {
+        for (int i = 0; i < columns.length; ++i)
+            if (columns[i].isNotNull() && new_row_data[i] == null)
+                throw new SQLException("Violate not null constraint");
         Object[] old_row_data = data.get(row);
         if (!primary_keys.isEmpty()) {
             ArrayList<Object> item = new ArrayList<>();
@@ -149,7 +152,7 @@ public class Table implements Serializable {
                 item.add(old_row_data[key]);
             primary_key_index.remove(item);
         }
-        System.arraycopy(new_row_data, 0, old_row_data, 0, getColumnSize());
+        System.arraycopy(new_row_data, 0, old_row_data, 0, columns.length);
         if (!primary_keys.isEmpty()) {
             ArrayList<Object> item = new ArrayList<>();
             for (Integer key : primary_keys)
