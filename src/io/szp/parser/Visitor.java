@@ -61,6 +61,11 @@ public class Visitor extends SQLBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitShowTableStatement(SQLParser.ShowTableStatementContext ctx) {
+        return visit(ctx.showTable());
+    }
+
+    @Override
     public Object visitSelectStatementStatement(SQLParser.SelectStatementStatementContext ctx) {
         return visit(ctx.selectStatement());
     }
@@ -116,6 +121,11 @@ public class Visitor extends SQLBaseVisitor<Object> {
     @Override
     public Object visitShowTables(SQLParser.ShowTablesContext ctx) {
         return new ShowTablesStatement();
+    }
+
+    @Override
+    public Object visitShowTable(SQLParser.ShowTableContext ctx) {
+        return new ShowTableStatement((String) visit(ctx.uid()));
     }
 
     @Override

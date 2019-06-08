@@ -84,8 +84,11 @@ public class ClientMain {
                             }
                             command = builder.toString();
                         }
+                        long start = System.currentTimeMillis();
                         out.writeObject(command);
                         Object object = in.readObject();
+                        long end = System.currentTimeMillis();
+                        System.out.println("Time: " + ((end - start) / 1000) + "s");
                         if (object instanceof String)
                             System.err.println((String) object);
                         else if (object instanceof Table)

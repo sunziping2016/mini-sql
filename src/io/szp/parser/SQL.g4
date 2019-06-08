@@ -22,6 +22,7 @@ statement
     | useStatement      # UseStatementStatement
     | showDatabases     # ShowDatabasesStatement
     | showTables        # ShowTablesStatement
+    | showTable         # ShowTableStatement
     ;
 
 createDatabase
@@ -43,8 +44,8 @@ dropTable
 createDefinition
     : uid typeName=(
         INT | LONG | FLOAT | DOUBLE | STRING
-      ) columnConstraint*                       # CreateDefinitionAddColumn
-    | PRIMARY KEY '(' uidList ')'               # CreateDefinitionPrimaryKeyConstraint
+      ) ('(' expressions ')')? columnConstraint*    # CreateDefinitionAddColumn
+    | PRIMARY KEY '(' uidList ')'                   # CreateDefinitionPrimaryKeyConstraint
     ;
 
 columnConstraint
@@ -58,6 +59,10 @@ showDatabases
 
 showTables
     : SHOW TABLES
+    ;
+
+showTable
+    : SHOW TABLE uid
     ;
 
 selectStatement
