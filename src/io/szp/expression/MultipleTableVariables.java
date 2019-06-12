@@ -77,6 +77,8 @@ public class MultipleTableVariables implements Variables {
         Table table = tables[position.table];
         Type type = table.getColumn(position.column).getType();
         Object data = table.getData(rows[position.table], position.column);
+        if (data == null)
+            return data;
         switch (type) {
             case INT:
                 return (long) (int) data;
